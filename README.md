@@ -130,7 +130,86 @@ com.budgetai
 │
 ├── tools
 └── controller
+
 🔐 Variáveis de Ambiente
+
+## ⚙️ Configuração
+
+## application.yml
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/budgetai
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  ai:
+    openai:
+      api-key: SUA_API_KEY
+      chat:
+        options:
+          model: gpt-4o-mini
+```
+
+---
+
+# ▶️ Executando o Projeto
+
+## Instalar dependências
+
+```bash
+mvn clean install
+```
+
+## Rodar aplicação
+
+```bash
+mvn spring-boot:run
+```
+
+---
+
+# 📘 Swagger
+
+Acesse:
+
+```bash
+http://localhost:8080/swagger-ui.html
+```
+
+---
+
+# 🤖 Exemplo de Uso
+
+## Entrada
+
+```text
+Gastei 50 reais no Starbucks
+```
+
+## Resultado esperado
+
+```json
+{
+  "amount": 50,
+  "category": "FOOD",
+  "location": "Starbucks"
+}
+```
+
+---
+
+# 🧪 Executando Testes
+
+```bash
+mvn test
+```
+
 OPENAI_API_KEY=your_key_here
 OPENAI_MODEL=gpt-4o-mini
 🧪 Próximos Passos
