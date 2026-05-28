@@ -1,6 +1,58 @@
 # 💰 Budget AI API
 
-API financeira inteligente desenvolvida com Java, Spring Boot e Spring AI.
+🧠 ARQUITETURA FINAL (Voz → IA → Ações → Voz)
+🔷 FLUXO COMPLETO
+🎤 ÁUDIO
+↓
+STT (Speech-to-Text)
+↓
+🧠 IA (Spring AI / LLM)
+↓
+🔧 TOOLS (registrar gasto, buscar dados)
+↓
+📊 Banco de dados
+↓
+🔊 TTS (Text-to-Speech)
+↓
+🎧 ÁUDIO FINAL
+
+🏗️ 1. ESTRUTURA DE PACOTES (PROFISSIONAL)
+com.budgetai
+│
+├── application
+│   ├── service
+│   │   └── AssistantService
+│   ├── usecase
+│   ├── dto
+│   └── mapper
+│
+├── domain
+│   ├── entity
+│   ├── repository
+│   └── service
+│
+├── infrastructure
+│   ├── ai
+│   │   ├── AiConfiguration
+│   │   ├── SystemPrompts
+│   │
+│   ├── stt
+│   │   ├── SttService (interface)
+│   │   ├── OpenAiSttService
+│   │   └── FutureSttModule (mock opcional)
+│   │
+│   ├── tts
+│   │   ├── TtsService (interface)
+│   │   ├── OpenAiTtsService
+│   │   └── FutureTtsModule (mock opcional)
+│   │
+│   ├── integration
+│   │   └── OpenAiIntegration
+│
+├── tools
+│   └── ExpenseTools
+│
+└── controller
 
 O sistema permite registrar despesas através de linguagem natural utilizando IA generativa.
 
