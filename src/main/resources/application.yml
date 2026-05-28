@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/budget_ai
+    username: postgres
+    password: maria
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
+      chat:
+        options:
+          model: gpt-4o-mini
+          temperature: 0.2
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

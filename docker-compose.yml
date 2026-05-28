@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+
+  postgres:
+    image: postgres:14
+    container_name: budget-ai-postgres
+
+    environment:
+      POSTGRES_DB: budget_ai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: maria
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
