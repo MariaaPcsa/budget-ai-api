@@ -1,245 +1,176 @@
 📊 Budget AI API
 
-Sistema inteligente de assistente financeiro com IA + Voz (STT/TTS) + Tools automáticas, construído com Spring Boot + Spring AI.
 
-🚀 Visão do Projeto
 
-O Budget AI API é uma API que funciona como um assistente financeiro inteligente capaz de:
-https://docs.spring.io/spring-ai/reference/api/audio/speech.html
 
-Interpretar mensagens em linguagem natural
-Identificar e registrar gastos automaticamente
-Responder com IA usando Spring AI
-Preparar pipeline de voz (Speech-to-Text e Text-to-Speech)
-Estrutura pronta para integração com OpenAI, Google e AWS
-🧠 Arquitetura
 
-Fluxo principal do sistema:
 
-🎤 Áudio (STT)
-      ↓
-🧠 Spring AI (LLM + Tools)
-      ↓
-💾 Persistência (PostgreSQL)
-      ↓
-🔊 TTS (resposta em áudio)
-⚙️ Tecnologias
+
+
+
+
+
+
+
+
+🚀 Intelligent Financial Assistant with AI + Voice
+
+Budget AI API is an intelligent financial assistant built with Spring Boot + Spring AI, capable of understanding natural language, processing voice input, and automatically managing personal finances using AI tools.
+
+It works like a conversational financial agent:
+
+🎤 User speaks or types
+🧠 AI interprets intent
+💾 System records or queries data
+🔊 Response is returned in text (and future audio)
+
+✨ Key Features
+💰 Smart Expense Management
+Automatic expense registration from natural language
+Category detection (FOOD, TRANSPORT, HEALTH, etc.)
+Daily and monthly summaries
+Structured financial insights
+🧠 AI-Powered Assistant
+Natural language understanding (Spring AI + GPT)
+Tool execution (function calling)
+Context-aware responses
+Financial reasoning engine
+🎤 Voice Interface (STT)
+Speech-to-Text integration ready
+OpenAI Whisper compatible
+Extensible to Google / AWS Speech APIs
+🔊 Text-to-Speech (TTS)
+AI-generated voice responses
+OpenAI TTS integration ready
+Extensible voice providers
+⚙️ Tool-Based Architecture
+
+AI can directly execute system actions:
+
+registrar_gasto
+consultar_despesas
+resumo_financeiro
+🧠 System Architecture
+🏗️ Tech Stack
 Java 21
 Spring Boot 3.5
 Spring AI (ChatClient + Tools)
 Spring Data JPA
 PostgreSQL
 Lombok
-OpenAPI (Swagger)
-REST API
-Arquitetura em camadas (Clean Architecture)
-📦 Funcionalidades
-💰 Gestão de despesas
-Registrar gastos automaticamente
-Listar despesas
-Resumo financeiro (total + categoria principal)
-🧠 IA Financeira
-Interpretação de mensagens naturais
-Extração de dados estruturados
-Execução automática de tools
+OpenAPI / Swagger
+RESTful API Architecture
+Clean Architecture principles
+📦 Core Capabilities
+💬 Natural Language Processing
+"Gastei 50 reais no Starbucks"
 
-Exemplo:
-
-"gastei 50 reais no Starbucks"
-
-Resultado:
+➡️
 
 {
   "amount": 50,
   "category": "FOOD",
   "location": "Starbucks"
 }
-🎤 STT (Speech-to-Text)
-
-Módulo preparado para:
-
-OpenAI Whisper
-Google Speech-to-Text
-AWS Transcribe
-FutureSttModule.transcribeAudio()
-🔊 TTS (Text-to-Speech)
-
-Módulo preparado para:
-
-OpenAI TTS
-ElevenLabs
-Azure Speech
-FutureTtsModule.generateAudio()
-🧩 Tools (IA Functions)
-
-A IA pode executar ações automaticamente via tools:
-
-📌 registrar_gasto
-@Tool(name = "registrar_gasto")
-
-Permite que a IA registre despesas diretamente no sistema.
-
-🧪 Endpoints
-Chat com IA
+📊 Financial Insights
+Total spent today
+Category breakdown
+Spending trends
+Conversational summaries
+🧪 API Endpoints
+🤖 Assistant
 POST /api/assistant/chat
 
-Request:
+Request
 
 {
-  "message": "gastei 30 reais no mercado"
+  "message": "quanto gastei hoje?"
 }
 
-Response:
+Response
 
 {
-  "status": "success",
-  "response": "Gasto registrado com sucesso"
+  "response": "Você gastou hoje R$ 200.00"
 }
-Despesas
+💰 Expenses
 GET /api/expenses
 GET /api/expenses/summary
-🧠 IA Configuração
-
-Configuração Spring AI:
-
+⚙️ Configuration
+application.yml
 spring:
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
-      chat:
-        model: gpt-4o-mini
 
-
-no terminal, defina a variável de ambiente para a chave da API do OpenAI:
-export OPENAI_API_KEY="sua_chave_aqui"
-```bash
-
-$env:OPENAI_API_KEY = "sua_have_aqui"
-mvn spring-boot:run
-
-🏗️ Estrutura do Projeto
-com.budgetai
-├── application
-│   ├── dto
-│   ├── service
-│   ├── usecase
-│   └── mapper
-│
-├── domain
-│   ├── entity
-│   ├── repository
-│   ├── service
-│   └── valueobject
-│
-├── infrastructure
-│   ├── ai
-│   ├── config
-│   ├── stt
-│   ├── tts
-│   └── integration
-│
-├── tools
-└── controller
-
-🔐 Variáveis de Ambiente
-
-## ⚙️ Configuração
-
-## application.yml
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/budgetai
-    username: postgres
-    password: postgres
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-  ai:
-    openai:
-      api-key: SUA_API_KEY
       chat:
         options:
           model: gpt-4o-mini
-```
+          temperature: 0.2
+OpenAI Integration Settings
+openai:
+  api:
+    key: ${OPENAI_API_KEY}
 
----
+    stt-model: whisper-1
+    base-url: https://api.openai.com/v1/audio/transcriptions
 
-# ▶️ Executando o Projeto
+    tts:
+      model: gpt-4o-mini-tts
+      voice: alloy
+      base-url: https://api.openai.com/v1/audio/speech
+▶️ Getting Started
+1. Clone the project
+git clone https://github.com/MariaaPcsa/budget-ai-api
+cd budget-ai-api
+2. Set environment variables
+export OPENAI_API_KEY=your_key_here
 
-## Instalar dependências
+Windows:
 
-```bash
+$env:OPENAI_API_KEY="your_key_here"
+3. Run the application
 mvn clean install
-```
-
-## Rodar aplicação
-
-```bash
 mvn spring-boot:run
-```
+📘 API Documentation
 
----
+Swagger UI:
 
-# 📘 Swagger
-
-Acesse:
-
-```bash
 http://localhost:8080/swagger-ui.html
-```
-
----
-
-# 🤖 Exemplo de Uso
-
-## Entrada
-
-```text
-Gastei 50 reais no Starbucks
-```
-
-## Resultado esperado
-
-```json
-{
-  "amount": 50,
-  "category": "FOOD",
-  "location": "Starbucks"
-}
-```
-
----
-
-# 🧪 Executando Testes
-
-```bash
+🧪 Testing
 mvn test
-```
+🧱 Project Structure
+com.budgetai
+├── application        # Use cases & DTOs
+├── domain             # Core business logic
+├── infrastructure     # External integrations (AI, DB, STT, TTS)
+├── tools              # AI tools/functions
+└── controller         # REST endpoints
+🧠 AI Design Principles
+Tool-based reasoning (Function Calling)
+Stateless API design
+Domain-driven structure
+AI as orchestrator, not logic owner
+Externalized intelligence (OpenAI / Spring AI)
+🧪 Roadmap
+ AI assistant core
+ Expense registration
+ STT integration (mock/ready)
+ TTS integration (mock/ready)
+ JWT Authentication
+ Keycloak integration
+ Docker deployment
+ Real-time voice streaming
+ Mobile frontend
+📌 Project Status
 
-OPENAI_API_KEY=your_key_here
-OPENAI_MODEL=gpt-4o-mini
+🚧 Active Development — MVP Functional
 
-🧪 Próximos Passos
+👨‍💻 Author
 
- Integração real OpenAI Whisper (STT)
- Integração OpenAI TTS
- Autenticação (JWT + Keycloak)
- Dockerização
- Deploy (AWS / Render / Railway)
- Streaming de voz em tempo real
-📌 Status do Projeto
+Built as a study project focused on:
 
-🚧 Em desenvolvimento (MVP funcional com IA + Tools)
-
-👨‍💻 Autor
-
-Projeto desenvolvido como sistema de aprendizado avançado em:
-
-Arquitetura Spring Boot moderna
-IA aplicada (Spring AI)
-Sistemas conversacionais
-Automação financeira inteligente
+Modern Spring Boot architecture
+AI-powered systems (Spring AI)
+Conversational agents
+Voice interfaces
+Financial automation systems
