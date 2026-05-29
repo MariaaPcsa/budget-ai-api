@@ -28,6 +28,14 @@ public class GlobalExceptionHandler {
                 .body("Dados inválidos");
     }
 
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<String> external(ExternalServiceException ex) {
+        HttpStatus status = ex.getStatus() != null ? ex.getStatus() : HttpStatus.BAD_GATEWAY;
+        return ResponseEntity
+                .status(status)
+                .body(ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(
             Exception ex

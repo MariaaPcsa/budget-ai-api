@@ -1,13 +1,12 @@
 package com.budgetai.application.service;
 
-
-
-import com.budgetai.application.service.AssistantService;
+import com.budgetai.domain.service.ExpenseSummaryService;
 import com.budgetai.tools.ExpenseTools;
 import org.junit.jupiter.api.Test;
 import org.springframework.ai.chat.client.ChatClient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -22,6 +21,9 @@ class AssistantServiceTest {
         ChatClient chatClient = mock(ChatClient.class);
 
         ExpenseTools expenseTools = mock(ExpenseTools.class);
+
+        ExpenseSummaryService expenseSummaryService =
+                mock(ExpenseSummaryService.class);
 
         ChatClient.ChatClientRequestSpec requestSpec =
                 mock(ChatClient.ChatClientRequestSpec.class);
@@ -53,7 +55,8 @@ class AssistantServiceTest {
         AssistantService service =
                 new AssistantService(
                         builder,
-                        expenseTools
+                        expenseTools,
+                        expenseSummaryService
                 );
 
         // EXECUTE

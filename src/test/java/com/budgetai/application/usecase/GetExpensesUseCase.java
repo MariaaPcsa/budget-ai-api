@@ -1,4 +1,4 @@
-package com.budgetai.usecase;
+package com.budgetai.application.usecase;
 
 
 

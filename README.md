@@ -5,6 +5,7 @@ Sistema inteligente de assistente financeiro com IA + Voz (STT/TTS) + Tools auto
 🚀 Visão do Projeto
 
 O Budget AI API é uma API que funciona como um assistente financeiro inteligente capaz de:
+https://docs.spring.io/spring-ai/reference/api/audio/speech.html
 
 Interpretar mensagens em linguagem natural
 Identificar e registrar gastos automaticamente
@@ -107,6 +108,15 @@ spring:
       api-key: ${OPENAI_API_KEY}
       chat:
         model: gpt-4o-mini
+
+
+no terminal, defina a variável de ambiente para a chave da API do OpenAI:
+export OPENAI_API_KEY="sua_chave_aqui"
+```bash
+
+$env:OPENAI_API_KEY = "sua_have_aqui"
+mvn spring-boot:run
+
 🏗️ Estrutura do Projeto
 com.budgetai
 ├── application
@@ -212,7 +222,9 @@ mvn test
 
 OPENAI_API_KEY=your_key_here
 OPENAI_MODEL=gpt-4o-mini
+
 🧪 Próximos Passos
+
  Integração real OpenAI Whisper (STT)
  Integração OpenAI TTS
  Autenticação (JWT + Keycloak)

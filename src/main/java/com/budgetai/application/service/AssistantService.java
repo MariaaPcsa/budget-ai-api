@@ -1,27 +1,69 @@
 package com.budgetai.application.service;
 
+import com.budgetai.domain.service.ExpenseSummaryService;
 import com.budgetai.infrastructure.ai.SystemPrompts;
 import com.budgetai.tools.ExpenseTools;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AssistantService {
 
     private final ChatClient.Builder chatClientBuilder;
     private final ExpenseTools expenseTools;
+    private final ExpenseSummaryService summaryService;
 
     public String processMessage(String message) {
 
-        ChatClient chatClient = chatClientBuilder.build();
+        log.info("Mensagem recebida: {}", message);
 
-        return chatClient.prompt()
-                .system(SystemPrompts.FINANCIAL_ASSISTANT)
-                .user(message)
-                .tools(expenseTools)
-                .call()
-                .content();
+        String lower = message.toLowerCase();
+
+        /*
+         ==========================================
+         CONSULTAS DIRETAS
+         ==========================================
+         */
+
+        if (lower.contains("quanto gastei hoje")) {
+
+            return summaryService.getTodayExpenses();
+        }
+
+        if (lower.contains("total de gastos hoje")) {
+
+            return summaryService.getTodayExpenses();
+        }
+
+        /*
+         ==========================================
+         IA + TOOL CALLING
+         ==========================================
+         */
+
+        try {
+
+            ChatClient chatClient = chatClientBuilder.build();
+
+            return chatClient.prompt()
+                    .system(SystemPrompts.FINANCIAL_ASSISTANT)
+                    .user(message)
+                    .tools(expenseTools)
+                    .call()
+                    .content();
+
+        } catch (Exception e) {
+
+            log.error("Erro ao chamar OpenAI", e);
+
+            return """
+                    Não consegui processar sua solicitação agora.
+                    Tente novamente em alguns segundos.
+                    """;
+        }
     }
 }

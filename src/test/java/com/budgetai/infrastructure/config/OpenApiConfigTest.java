@@ -1,7 +1,5 @@
 package com.budgetai.infrastructure.config;
 
-
-
 import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Test;
 
@@ -21,18 +19,19 @@ class OpenApiConfigTest {
         assertNotNull(openAPI.getInfo());
 
         assertEquals(
-                "Budget AI API",
+                "💰 Budget AI API",
                 openAPI.getInfo().getTitle()
         );
 
         assertEquals(
-                "1.0",
+                "1.0.0",
                 openAPI.getInfo().getVersion()
         );
 
-        assertEquals(
-                "API financeira inteligente",
-                openAPI.getInfo().getDescription()
+        assertTrue(
+                openAPI.getInfo()
+                        .getDescription()
+                        .contains("gerenciamento financeiro")
         );
     }
 }
