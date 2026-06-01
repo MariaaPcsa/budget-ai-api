@@ -61,8 +61,10 @@ Lombok
 OpenAPI / Swagger
 RESTful API Architecture
 Clean Architecture principles
+
 📦 Core Capabilities
 💬 Natural Language Processing
+
 "Gastei 50 reais no Starbucks"
 
 ➡️

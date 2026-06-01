@@ -1,42 +1,89 @@
 package com.budgetai.infrastructure.tts;
 
 import com.budgetai.infrastructure.config.OpenAiProperties;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class FutureTtsModuleTest {
 
-    private FutureTtsModule futureTtsModule;
+    @Mock
+    private OpenAiProperties properties;
 
-    @BeforeEach
-    void setup() {
+    @Mock
+    private OpenAiProperties.Tts tts;
 
-        OpenAiProperties properties = new OpenAiProperties();
+    @Mock
+    private RestTemplate restTemplate;
 
-        properties.setKey("fake-key");
+    @InjectMocks
+    private FutureTtsModule module;
 
-        OpenAiProperties.Tts tts = new OpenAiProperties.Tts();
-        tts.setModel("gpt-4o-mini-tts");
-        tts.setVoice("alloy");
-        tts.setBaseUrl("https://api.openai.com/v1/audio/speech");
+    @Test
+    void shouldGenerateAudioSuccessfully() {
 
-        properties.setTts(tts);
+        byte[] expectedAudio =
+                "audio".getBytes();
 
-        RestTemplate restTemplate = new RestTemplate();
+        when(properties.getKey())
+                .thenReturn("sk-test");
 
-        futureTtsModule =
-                new FutureTtsModule(
-                        properties,
-                        restTemplate
+        when(properties.getTts())
+                .thenReturn(tts);
+
+        when(tts.getBaseUrl())
+                .thenReturn(
+                        "https://api.openai.com/v1/audio/speech"
                 );
+
+        when(tts.getModel())
+                .thenReturn("gpt-4o-mini-tts");
+
+        when(tts.getVoice())
+                .thenReturn("alloy");
+
+        when(restTemplate.exchange(
+                anyString(),
+                eq(HttpMethod.POST),
+                any(),
+                eq(byte[].class)
+        ))
+                .thenReturn(
+                        ResponseEntity.ok(expectedAudio)
+                );
+
+        byte[] result =
+                module.generateAudio("Olá mundo");
+
+        assertNotNull(result);
+        assertEquals(
+                expectedAudio.length,
+                result.length
+        );
     }
 
     @Test
-    void shouldCreateModule() {
+    void shouldThrowRuntimeExceptionWhenTextIsBlank() {
 
-        assertNotNull(futureTtsModule);
+        RuntimeException exception =
+                assertThrows(
+                        RuntimeException.class,
+                        () -> module.generateAudio("")
+                );
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("Texto para geração de áudio é obrigatório")
+        );
     }
 }

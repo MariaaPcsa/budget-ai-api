@@ -16,7 +16,8 @@ public class SaveConversationUseCase {
     private final ConversationDomainService domainService;
 
     public void execute(String userMessage, String aiResponse) {
-
+        System.out.println("USER = " + userMessage);
+        System.out.println("AI = " + aiResponse);
         Conversation conversation = Conversation.builder()
                 .userMessage(userMessage)
                 .aiResponse(aiResponse)

@@ -119,32 +119,100 @@
     <build>
         <plugins>
 
-            <!-- SPRING BOOT -->
+            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-            <!-- JAVA 21 -->
+            <!-- Java 21 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.0</version>
 
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <annotationProcessorPaths>
+                    <release>${java.version}</release>
 
+                    <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>1.18.38</version>
                         </path>
-
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
 
+            <!-- JaCoCo -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+
+                <executions>
+
+                    <!-- Instrumenta os testes -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Relatório HTML -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Verificação de cobertura -->
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+
+                        <configuration>
+
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+
+                                    <limits>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+
+                                            <!-- 50% inicialmente -->
+                                            <minimum>0.50</minimum>
+                                        </limit>
+                                    </limits>
+
+                                </rule>
+                            </rules>
+
+                            <excludes>
+                                <exclude>**/config/**</exclude>
+                                <exclude>**/dto/**</exclude>
+                                <exclude>**/entity/**</exclude>
+                                <exclude>**/exception/**</exclude>
+                                <exclude>**/BudgetAiApplication*</exclude>
+                            </excludes>
+
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
+
 
 </project>

@@ -16,20 +16,16 @@ class VoiceChatUseCaseTest {
     private AssistantService assistantService;
     private SaveConversationUseCase saveConversationUseCase;
 
-    private VoiceChatUseCase voiceChatUseCase;
+    private VoiceChatUseCase useCase;
 
     @BeforeEach
     void setup() {
 
         sttModule = mock(FutureSttModule.class);
-
         assistantService = mock(AssistantService.class);
+        saveConversationUseCase = mock(SaveConversationUseCase.class);
 
-        saveConversationUseCase = mock(
-                SaveConversationUseCase.class
-        );
-
-        voiceChatUseCase = new VoiceChatUseCase(
+        useCase = new VoiceChatUseCase(
                 sttModule,
                 assistantService,
                 saveConversationUseCase
@@ -39,22 +35,25 @@ class VoiceChatUseCaseTest {
     @Test
     void shouldProcessVoiceSuccessfully() {
 
-        MockMultipartFile audioFile =
+        MockMultipartFile file =
                 new MockMultipartFile(
                         "file",
                         "audio.mp3",
                         "audio/mpeg",
-                        "fake audio".getBytes()
+                        "audio".getBytes()
                 );
 
-        when(sttModule.transcribeAudio(audioFile))
+        when(sttModule.transcribeAudio(file))
                 .thenReturn("Quanto gastei hoje?");
 
-        when(assistantService.processMessage("Quanto gastei hoje?"))
-                .thenReturn("Você gastou R$ 150 hoje.");
+        when(assistantService.processMessage(
+                "Quanto gastei hoje?"
+        )).thenReturn(
+                "Você gastou hoje R$ 200.00"
+        );
 
         VoiceResponseDTO response =
-                voiceChatUseCase.execute(audioFile);
+                useCase.execute(file);
 
         assertNotNull(response);
 
@@ -64,14 +63,133 @@ class VoiceChatUseCaseTest {
         );
 
         assertEquals(
-                "Você gastou R$ 150 hoje.",
+                "Você gastou hoje R$ 200.00",
                 response.response()
         );
 
-        verify(saveConversationUseCase, times(1))
+        verify(saveConversationUseCase)
                 .execute(
                         "Quanto gastei hoje?",
-                        "Você gastou R$ 150 hoje."
+                        "Você gastou hoje R$ 200.00"
+                );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFileIsNull() {
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> useCase.execute(null)
+                );
+
+        assertEquals(
+                "Arquivo de áudio não pode ser vazio",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFileIsEmpty() {
+
+        MockMultipartFile file =
+                new MockMultipartFile(
+                        "file",
+                        "",
+                        "audio/mpeg",
+                        new byte[0]
+                );
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> useCase.execute(file)
+                );
+
+        assertEquals(
+                "Arquivo de áudio não pode ser vazio",
+                exception.getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTranscriptIsEmpty() {
+
+        MockMultipartFile file =
+                new MockMultipartFile(
+                        "file",
+                        "audio.mp3",
+                        "audio/mpeg",
+                        "audio".getBytes()
+                );
+
+        when(sttModule.transcribeAudio(file))
+                .thenReturn("");
+
+        RuntimeException exception =
+                assertThrows(
+                        RuntimeException.class,
+                        () -> useCase.execute(file)
+                );
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("Transcrição vazia")
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAiResponseIsEmpty() {
+
+        MockMultipartFile file =
+                new MockMultipartFile(
+                        "file",
+                        "audio.mp3",
+                        "audio/mpeg",
+                        "audio".getBytes()
+                );
+
+        when(sttModule.transcribeAudio(file))
+                .thenReturn("Quanto gastei hoje?");
+
+        when(assistantService.processMessage(any()))
+                .thenReturn("");
+
+        RuntimeException exception =
+                assertThrows(
+                        RuntimeException.class,
+                        () -> useCase.execute(file)
+                );
+
+        assertTrue(
+                exception.getMessage()
+                        .contains("Resposta vazia")
+        );
+    }
+
+    @Test
+    void shouldSaveConversationAfterProcessing() {
+
+        MockMultipartFile file =
+                new MockMultipartFile(
+                        "file",
+                        "audio.mp3",
+                        "audio/mpeg",
+                        "audio".getBytes()
+                );
+
+        when(sttModule.transcribeAudio(any()))
+                .thenReturn("Olá");
+
+        when(assistantService.processMessage(any()))
+                .thenReturn("Resposta");
+
+        useCase.execute(file);
+
+        verify(saveConversationUseCase, times(1))
+                .execute(
+                        "Olá",
+                        "Resposta"
                 );
     }
 }
