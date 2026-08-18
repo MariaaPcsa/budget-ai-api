@@ -1,57 +1,51 @@
-📊 Budget AI API
+## 📊 Budget AI API
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-🚀 Intelligent Financial Assistant with AI + Voice
+## 🚀 Intelligent Financial Assistant with AI + Voice
 
 Budget AI API is an intelligent financial assistant built with Spring Boot + Spring AI, capable of understanding natural language, processing voice input, and automatically managing personal finances using AI tools.
 
 It works like a conversational financial agent:
 
-🎤 User speaks or types
-🧠 AI interprets intent
-💾 System records or queries data
-🔊 Response is returned in text (and future audio)
+## 🎤 User speaks or types
+## 🧠 AI interprets intent
+## 💾 System records or queries data
+## 🔊 Response is returned in text (and future audio)
 
-✨ Key Features
-💰 Smart Expense Management
+## ✨ Key Features
+## 💰 Smart Expense Management
 Automatic expense registration from natural language
 Category detection (FOOD, TRANSPORT, HEALTH, etc.)
 Daily and monthly summaries
 Structured financial insights
-🧠 AI-Powered Assistant
+
+## 🧠 AI-Powered Assistant
 Natural language understanding (Spring AI + GPT)
 Tool execution (function calling)
 Context-aware responses
 Financial reasoning engine
-🎤 Voice Interface (STT)
+
+## 🎤 Voice Interface (STT)
 Speech-to-Text integration ready
 OpenAI Whisper compatible
 Extensible to Google / AWS Speech APIs
-🔊 Text-to-Speech (TTS)
+
+## 🔊 Text-to-Speech (TTS)
 AI-generated voice responses
 OpenAI TTS integration ready
 Extensible voice providers
-⚙️ Tool-Based Architecture
+
+## ⚙️ Tool-Based Architecture
 
 AI can directly execute system actions:
 
 registrar_gasto
 consultar_despesas
 resumo_financeiro
-🧠 System Architecture
-🏗️ Tech Stack
+
+
+## 🏗️ Tech Stack
 Java 21
 Spring Boot 3.5
 Spring AI (ChatClient + Tools)
@@ -62,8 +56,8 @@ OpenAPI / Swagger
 RESTful API Architecture
 Clean Architecture principles
 
-📦 Core Capabilities
-💬 Natural Language Processing
+## 📦 Core Capabilities
+## 💬 Natural Language Processing
 
 "Gastei 50 reais no Starbucks"
 
@@ -79,7 +73,7 @@ Total spent today
 Category breakdown
 Spending trends
 Conversational summaries
-🧪 API Endpoints
+## 🧪 API Endpoints
 🤖 Assistant
 POST /api/assistant/chat
 
@@ -94,7 +88,7 @@ Response
 {
   "response": "Você gastou hoje R$ 200.00"
 }
-💰 Expenses
+## 💰 Expenses
 GET /api/expenses
 GET /api/expenses/summary
 ⚙️ Configuration
@@ -120,7 +114,7 @@ openai:
       model: gpt-4o-mini-tts
       voice: alloy
       base-url: https://api.openai.com/v1/audio/speech
-▶️ Getting Started
+## ▶️ Getting Started
 1. Clone the project
 git clone https://github.com/MariaaPcsa/budget-ai-api
 cd budget-ai-api
@@ -133,27 +127,106 @@ $env:OPENAI_API_KEY="your_key_here"
 3. Run the application
 mvn clean install
 mvn spring-boot:run
-📘 API Documentation
+## 📘 API Documentation
 
 Swagger UI:
 
 http://localhost:8080/swagger-ui.html
 🧪 Testing
 mvn test
-🧱 Project Structure
+## 🧱 Project Structure
+
+Conceitos de Clean Architecture/DDD:
+
 com.budgetai
-├── application        # Use cases & DTOs
-├── domain             # Core business logic
-├── infrastructure     # External integrations (AI, DB, STT, TTS)
-├── tools              # AI tools/functions
-└── controller         # REST endpoints
-🧠 AI Design Principles
+│
+├── application
+│   ├── dto
+│   │   ├── ChatRequestDTO
+│   │   ├── ChatResponseDTO
+│   │   ├── ConversationResponseDTO
+│   │   ├── ExpenseRequestDTO
+│   │   ├── ExpenseResponseDTO
+│   │   ├── ExpenseSummaryDTO
+│   │   └── VoiceResponseDTO
+│   │
+│   ├── mapper
+│   │   └── ExpenseMapper
+│   │
+│   ├── service
+│   │   └── AssistantService
+│   │
+│   └── usecase
+│       ├── CreateExpenseUseCase
+│       ├── GenerateSpeechUseCase
+│       ├── GetConversationHistoryUseCase
+│       ├── GetExpenseSummaryUseCase
+│       ├── GetExpensesUseCase
+│       ├── SaveConversationUseCase
+│       └── VoiceChatUseCase
+│
+├── controller
+│   ├── AssistantController
+│   ├── ConversationController
+│   ├── ExpenseController
+│   ├── TtsController
+│   └── VoiceController
+│
+├── domain
+│   ├── entity
+│   │   ├── Conversation
+│   │   └── Expense
+│   ├── repository
+│   │   ├── ConversationRepository
+│   │   └── ExpenseRepository
+│   ├── service
+│   │   ├── ConversationDomainService
+│   │   ├── ExpenseDomainService
+│   │   └── ExpenseSummaryService
+│   └── valueobject
+│       └── ExpenseCategory
+│
+├── exception
+│   ├── BusinessException
+│   ├── ExternalServiceException
+│   └── GlobalExceptionHandler
+│
+└── infrastructure
+├── ai
+│   ├── AiConfiguration
+│   └── SystemPrompts
+│
+├── config
+│   ├── CorsConfig
+│   ├── HttpConfig
+│   ├── OpenAiProperties
+│   └── OpenAiConfig
+│
+├── integration
+│   └── OpenAiIntegration
+│
+├── persistence
+│
+├── stt
+│   ├── FutureSttModule
+│   ├── OpenAiSttService
+│   └── SttService
+│
+├── tts
+│   ├── FutureTtsModule
+│   ├── OpenAiTtsService
+│   └── TtsService
+│
+└── tools
+└── ExpenseTools
+
+## 🧠 AI Design Principles
 Tool-based reasoning (Function Calling)
 Stateless API design
 Domain-driven structure
 AI as orchestrator, not logic owner
 Externalized intelligence (OpenAI / Spring AI)
-🧪 Roadmap
+## 🧪 Roadmap
  AI assistant core
  Expense registration
  STT integration (mock/ready)
@@ -163,11 +236,11 @@ Externalized intelligence (OpenAI / Spring AI)
  Docker deployment
  Real-time voice streaming
  Mobile frontend
-📌 Project Status
+## 📌 Project Status
 
-🚧 Active Development — MVP Functional
+## 🚧 Active Development — MVP Functional
 
-👨‍💻 Author
+## 👨‍💻 Author
 
 Built as a study project focused on:
 
