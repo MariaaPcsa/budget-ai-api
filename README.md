@@ -1,17 +1,16 @@
 ## 📊 Budget AI API
 
 
-
-## 🚀 Intelligent Financial Assistant with AI + Voice
+# Intelligent Financial Assistant with AI + Voice
 
 Budget AI API is an intelligent financial assistant built with Spring Boot + Spring AI, capable of understanding natural language, processing voice input, and automatically managing personal finances using AI tools.
 
 It works like a conversational financial agent:
 
-## 🎤 User speaks or types
-## 🧠 AI interprets intent
-## 💾 System records or queries data
-## 🔊 Response is returned in text (and future audio)
+## User speaks or types
+## AI interprets intent
+## System records or queries data
+## Response is returned in text (and future audio)
 
 ## ✨ Key Features
 ## 💰 Smart Expense Management
@@ -56,8 +55,8 @@ OpenAPI / Swagger
 RESTful API Architecture
 Clean Architecture principles
 
-## 📦 Core Capabilities
-## 💬 Natural Language Processing
+# Core Capabilities
+# Natural Language Processing
 
 "Gastei 50 reais no Starbucks"
 
