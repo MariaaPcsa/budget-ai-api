@@ -776,3 +776,26 @@ pode evoluir
 Sempre prefira uma solução simples e correta a uma solução complexa e desnecessária.
 
 O objetivo é transformar o Budget AI API gradualmente em uma aplicação **robusta, profissional, testável e preparada para produção**, preservando o conhecimento e o código já existentes.
+
+---
+
+# 30. Práticas de DevOps e Versionamento (Git Flow)
+
+A partir de agora, o projeto deve seguir boas práticas de versionamento. **Não devemos mais commitar diretamente na branch `main`**.
+
+Ao iniciar o desenvolvimento de qualquer nova tarefa, devemos criar uma branch seguindo os padrões abaixo:
+
+### Padrão de Nomenclatura de Branches
+- `feat/`: para novas funcionalidades (ex: `feat/adicionar-endpoint-relatorio`).
+- `fix/`: para correção de bugs (ex: `fix/erro-no-calculo-despesas`).
+- `chore/`: para tarefas de manutenção, dependências ou configurações (ex: `chore/atualizar-spring-boot`).
+- `refactor/`: para refatoração de código sem adição de funcionalidade (ex: `refactor/simplificar-controller`).
+- `docs/`: para alterações na documentação (ex: `docs/atualizar-readme`).
+- `test/`: para adição ou modificação de testes (ex: `test/testes-unitarios-tools`).
+
+### Fluxo de Trabalho (Workflow)
+1. **Sincronizar:** Garantir que a branch local está atualizada (`git pull origin main`).
+2. **Criar Branch:** Criar a nova branch a partir da `main` (`git checkout -b tipo/nome-da-branch`).
+3. **Desenvolver:** Implementar as alterações em pequenos commits, com mensagens claras e semânticas.
+4. **Push e Pull Request:** Enviar a branch para o remoto (`git push origin tipo/nome-da-branch`) e realizar o merge via Pull Request (ou merge localmente se aprovado explicitamente).
+5. **Deletar:** Após o merge, deletar a branch para manter o repositório limpo.
