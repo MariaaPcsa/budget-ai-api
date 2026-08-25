@@ -1,6 +1,5 @@
 package com.budgetai.application.service;
 
-import com.budgetai.domain.service.ExpenseSummaryService;
 import com.budgetai.infrastructure.ai.SystemPrompts;
 import com.budgetai.tools.ExpenseTools;
 import lombok.RequiredArgsConstructor;
@@ -15,29 +14,10 @@ public class AssistantService {
 
     private final ChatClient.Builder chatClientBuilder;
     private final ExpenseTools expenseTools;
-    private final ExpenseSummaryService summaryService;
 
     public String processMessage(String message) {
 
         log.info("Mensagem recebida: {}", message);
-
-        String lower = message.toLowerCase();
-
-        /*
-         ==========================================
-         CONSULTAS DIRETAS
-         ==========================================
-         */
-
-        if (lower.contains("quanto gastei hoje")) {
-
-            return summaryService.getTodayExpenses();
-        }
-
-        if (lower.contains("total de gastos hoje")) {
-
-            return summaryService.getTodayExpenses();
-        }
 
         /*
          ==========================================
