@@ -1,71 +1,93 @@
 # Budget AI API
 
-> API financeira inteligente construída com **Java + Spring Boot + Spring AI**, capaz de interpretar comandos em linguagem natural, registrar despesas, consultar informações financeiras e utilizar ferramentas para executar operações de negócio.
+> API financeira inteligente desenvolvida com **Java 21, Spring Boot, Spring AI e OpenAI**, capaz de interpretar comandos em linguagem natural, utilizar **Tool Calling** para executar operações de negócio e processar interações por voz.
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-brightgreen)](https://spring.io/projects/spring-boot)
 [![Spring AI](https://img.shields.io/badge/Spring%20AI-AI%20Integration-blue)](https://spring.io/projects/spring-ai)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-Containerization-2496ED)](https://www.docker.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Containerization-blue)](https://www.docker.com/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-LLM-black)](https://openai.com/)
 
 ---
 
 ## Sobre o projeto
 
-O **Budget AI API** é uma API REST desenvolvida para demonstrar como construir um assistente financeiro utilizando **Inteligência Artificial Generativa integrada ao ecossistema Spring**.
+O **Budget AI API** é uma API REST desenvolvida para explorar a aplicação de **Inteligência Artificial Generativa em um backend Java**, utilizando o ecossistema Spring.
 
-A aplicação permite que o usuário interaja com o sistema utilizando linguagem natural.
+A aplicação permite que o usuário interaja com um assistente financeiro utilizando linguagem natural.
 
 Por exemplo:
 
 ```text
-"Gastei 50 reais no Starbucks"
+"Gastei 50 reais no supermercado"
 ```
 
-A IA interpreta a intenção do usuário e pode transformar essa informação em uma operação estruturada:
+O modelo de IA interpreta a intenção da mensagem e pode solicitar uma ferramenta da aplicação para registrar a despesa.
 
-```json
-{
-  "amount": 50.00,
-  "category": "FOOD",
-  "location": "Starbucks"
-}
+A operação efetiva permanece sob responsabilidade da aplicação, seguindo o fluxo:
+
+```text
+Usuário
+   ↓
+API
+   ↓
+Spring AI / ChatClient
+   ↓
+LLM
+   ↓
+Tool Calling
+   ↓
+Use Case
+   ↓
+Domain
+   ↓
+Repository
+   ↓
+PostgreSQL
 ```
 
-A partir dessa interpretação, a aplicação pode utilizar ferramentas de negócio para registrar a despesa ou consultar informações financeiras.
+### Princípio central
+
+> **A IA interpreta a intenção. A aplicação executa as regras de negócio.**
+
+Essa separação evita que o LLM tenha responsabilidade direta sobre as regras determinísticas do sistema.
 
 ---
 
-## Objetivos
+# Objetivos
 
-O projeto foi desenvolvido com os seguintes objetivos:
+O projeto foi desenvolvido para explorar:
 
-* Demonstrar integração entre **Spring Boot e Inteligência Artificial**.
-* Explorar o **Spring AI**.
-* Utilizar **Tool Calling / Function Calling**.
-* Aplicar conceitos de **Clean Architecture**.
-* Aplicar conceitos de **DDD**.
-* Criar uma API REST organizada e extensível.
-* Separar a inteligência artificial das regras de negócio.
-* Preparar a aplicação para interação por voz.
-* Criar uma base para evolução futura para uma aplicação mobile.
+* Desenvolvimento de APIs REST com Java e Spring Boot.
+* Integração de LLMs utilizando Spring AI.
+* Tool Calling.
+* Arquitetura Limpa.
+* Domain-Driven Design (DDD).
+* Separação entre IA e regras de negócio.
+* Persistência com PostgreSQL.
+* Processamento de voz utilizando STT/TTS.
+* Documentação de APIs com OpenAPI/Swagger.
+* Testes automatizados.
+* Containerização com Docker.
+* Práticas de engenharia de software aplicadas a sistemas com IA.
 
 ---
 
-## Funcionalidades
+# Funcionalidades
 
-### Gestão de despesas
+## Gestão de despesas
 
-A API permite trabalhar com despesas financeiras e disponibiliza operações como:
+A API disponibiliza operações para gerenciamento de despesas:
 
-* Cadastro de despesas.
-* Consulta de despesas.
-* Resumo financeiro.
-* Classificação de despesas.
-* Identificação automática de categorias através da IA.
+* Criar despesa.
+* Consultar todas as despesas.
+* Consultar uma despesa por ID.
+* Atualizar uma despesa.
+* Excluir uma despesa.
+* Consultar resumo financeiro.
 
-Categorias podem incluir:
+Categorias disponíveis atualmente:
 
 ```text
 FOOD
@@ -78,19 +100,11 @@ OTHER
 
 ---
 
-### Assistente financeiro com IA
+## Assistente financeiro com IA
 
-O usuário pode enviar comandos em linguagem natural.
+O usuário pode enviar mensagens utilizando linguagem natural.
 
 Exemplo:
-
-```text
-Quanto gastei hoje?
-```
-
-A IA interpreta a intenção e pode utilizar uma ferramenta da aplicação para consultar os dados.
-
-Outro exemplo:
 
 ```text
 Gastei 80 reais no supermercado.
@@ -98,147 +112,142 @@ Gastei 80 reais no supermercado.
 
 A IA pode interpretar:
 
-```text
-Valor: R$ 80,00
-Categoria: FOOD
-Descrição: supermercado
+```json
+{
+  "amount": 80.00,
+  "category": "FOOD",
+  "location": "supermercado"
+}
 ```
 
-e executar a operação de registro através do mecanismo de ferramentas.
+A partir dessa interpretação, o modelo pode utilizar uma ferramenta da aplicação para executar o caso de uso correspondente.
+
+Outro exemplo:
+
+```text
+Quanto gastei hoje?
+```
+
+Nesse cenário, o LLM pode selecionar a ferramenta responsável por consultar os gastos realizados no dia.
 
 ---
 
-## Tool Calling
+# 🔧 Tool Calling
 
-Um dos principais conceitos explorados neste projeto é o **Tool Calling**.
+O **Tool Calling** é um dos principais conceitos explorados no projeto.
 
-A IA não deve ser responsável pelas regras de negócio.
+O LLM não acessa diretamente o banco de dados nem implementa as regras de negócio.
 
-Ela atua como um **orquestrador**.
+Ele recebe informações sobre as ferramentas disponíveis e decide qual ferramenta deve ser utilizada de acordo com a intenção do usuário.
 
-Fluxo simplificado:
-
-```text
-                  ┌──────────────────┐
-                  │      Usuário     │
-                  └────────┬─────────┘
-                           │
-                           ▼
-                  ┌──────────────────┐
-                  │ Assistant API    │
-                  └────────┬─────────┘
-                           │
-                           ▼
-                  ┌──────────────────┐
-                  │   Spring AI      │
-                  │    ChatClient    │
-                  └────────┬─────────┘
-                           │
-                           ▼
-                  ┌──────────────────┐
-                  │       LLM        │
-                  │      OpenAI      │
-                  └────────┬─────────┘
-                           │
-                    Tool Calling
-                           │
-             ┌─────────────┴─────────────┐
-             ▼                           ▼
-     registrar_gasto            consultar_despesas
-             │                           │
-             └─────────────┬─────────────┘
-                           ▼
-                  ┌──────────────────┐
-                  │  Domain / App    │
-                  │      Layer       │
-                  └────────┬─────────┘
-                           │
-                           ▼
-                  ┌──────────────────┐
-                  │   PostgreSQL     │
-                  └──────────────────┘
-```
-
-#### Ferramentas disponíveis
-
-As ferramentas atualmente disponíveis e mapeadas no Spring AI são:
+### Fluxo
 
 ```text
-registrar_gasto         - Registra uma nova despesa
-consultar_resumo_gastos - Consulta o resumo acumulado geral
-consultar_gastos_hoje   - Consulta o total gasto no dia de hoje
+                    ┌──────────────────┐
+                    │     Usuário      │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │   REST API       │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │   Spring AI      │
+                    │    ChatClient    │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │       LLM        │
+                    │     OpenAI       │
+                    └────────┬─────────┘
+                             │
+                       Tool Calling
+                             │
+              ┌──────────────┴──────────────┐
+              ▼                             ▼
+     registrar_gasto             consultar_resumo_gastos
+              │                             │
+              └──────────────┬──────────────┘
+                             ▼
+                    ┌──────────────────┐
+                    │    Use Cases     │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │      Domain      │
+                    └────────┬─────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │   PostgreSQL     │
+                    └──────────────────┘
 ```
 
-A vantagem dessa abordagem é manter as decisões da IA separadas das regras determinísticas da aplicação.
+### Ferramentas
+
+As ferramentas disponibilizadas ao assistente incluem:
+
+| Tool                      | Responsabilidade                         |
+| ------------------------- | ---------------------------------------- |
+| `registrar_gasto`         | Registra uma nova despesa                |
+| `consultar_resumo_gastos` | Consulta o resumo acumulado das despesas |
+| `consultar_gastos_hoje`   | Consulta os gastos realizados no dia     |
+
+A camada de ferramentas funciona como uma ponte entre a interpretação realizada pelo LLM e os casos de uso da aplicação.
 
 ---
 
-## Interação por voz
+# 🎙️ Processamento de voz
 
-O projeto também possui uma arquitetura preparada para processamento de voz.
+O projeto possui um fluxo de interação por voz utilizando **Speech-to-Text (STT)** e **Text-to-Speech (TTS)**.
 
-Fluxo planejado:
+## Fluxo
 
 ```text
 Áudio
-  │
-  ▼
+  ↓
 Speech-to-Text
-  │
-  ▼
+  ↓
 Texto
-  │
-  ▼
+  ↓
 Spring AI
-  │
-  ▼
+  ↓
+LLM
+  ↓
 Tool Calling
-  │
-  ▼
-Regra de negócio
-  │
-  ▼
+  ↓
+Use Case
+  ↓
 Resposta
-  │
-  ▼
+  ↓
 Text-to-Speech
-  │
-  ▼
+  ↓
 Áudio
 ```
 
-A implementação possui abstrações para permitir a utilização de diferentes provedores de STT/TTS.
-
-Exemplo:
+A arquitetura utiliza interfaces para reduzir o acoplamento com provedores externos.
 
 ```text
 SttService
     │
-    ├── OpenAiSttService
-    └── Future providers
+    └── OpenAiSttService
 
 TtsService
     │
-    ├── OpenAiTtsService
-    └── Future providers
+    └── OpenAiTtsService
 ```
 
-Essa estratégia reduz o acoplamento com um fornecedor específico.
+Essa abordagem permite substituir ou adicionar provedores futuramente sem alterar as regras de negócio.
 
 ---
 
-## Arquitetura
+# Arquitetura
 
-O projeto segue princípios de **Clean Architecture** e **Domain-Driven Design**, mantendo separação entre:
-
-* regras de negócio;
-* casos de uso;
-* interfaces externas;
-* infraestrutura;
-* integração com IA;
-* persistência.
-
-Estrutura principal:
+O projeto utiliza conceitos de **Clean Architecture** e **DDD**, buscando manter as regras de negócio independentes de detalhes externos.
 
 ```text
 src/main/java/com/budgetai
@@ -265,336 +274,329 @@ src/main/java/com/budgetai
     ├── integration
     ├── persistence
     ├── stt
-    ├── tts
-    └── tools
+    ├── tools
+    └── tts
 ```
+
+## Responsabilidade das camadas
+
+| Camada         | Responsabilidade                          |
+| -------------- | ----------------------------------------- |
+| Controller     | Exposição dos endpoints HTTP              |
+| Application    | Orquestração dos casos de uso             |
+| Domain         | Regras e conceitos do negócio             |
+| Infrastructure | Integrações externas e detalhes técnicos  |
+| Persistence    | Comunicação com o banco                   |
+| AI             | Integração com modelos de IA              |
+| Tools          | Exposição das operações para Tool Calling |
+
+### Regra arquitetural
+
+```text
+Controller
+    ↓
+Application
+    ↓
+Domain
+    ↓
+Repository
+    ↓
+Infrastructure
+```
+
+A infraestrutura fornece implementações para as abstrações utilizadas pelo núcleo da aplicação.
 
 ---
 
-## Camadas
+# Principais casos de uso
 
-### Application
-
-Responsável por orquestrar os casos de uso da aplicação.
-
-Exemplos:
+Entre os casos de uso implementados estão:
 
 ```text
 CreateExpenseUseCase
 GetExpensesUseCase
+GetExpenseByIdUseCase
+UpdateExpenseUseCase
+DeleteExpenseUseCase
 GetExpenseSummaryUseCase
-GetConversationHistoryUseCase
+
 SaveConversationUseCase
+GetConversationHistoryUseCase
+
 VoiceChatUseCase
 GenerateSpeechUseCase
 ```
 
+A ideia é manter cada operação de negócio isolada e testável.
+
 ---
 
-### Domain
+# Stack tecnológica
 
-Contém as principais regras e conceitos do negócio.
+| Tecnologia        | Utilização             |
+| ----------------- | ---------------------- |
+| Java 21           | Linguagem principal    |
+| Spring Boot 3.5   | Framework backend      |
+| Spring AI         | Integração com IA      |
+| OpenAI            | LLM e serviços de voz  |
+| Spring Data JPA   | Persistência           |
+| PostgreSQL        | Banco de dados         |
+| Maven             | Gerenciamento e build  |
+| Lombok            | Redução de boilerplate |
+| OpenAPI / Swagger | Documentação da API    |
+| Docker            | Containerização        |
+| JUnit             | Testes automatizados   |
+| JaCoCo            | Cobertura de testes    |
 
-Exemplos:
+---
 
-```text
-Expense
-Conversation
-ExpenseCategory
-ExpenseDomainService
-ConversationDomainService
-ExpenseSummaryService
+# 🔌 API
+
+A aplicação disponibiliza endpoints REST para interação com o assistente, gerenciamento de despesas, histórico de conversas e processamento de voz.
+
+> Para a documentação completa e interativa, utilize o Swagger UI.
+
+## Assistente
+
+### `POST /api/assistant/chat`
+
+Envia uma mensagem em linguagem natural.
+
+#### Request
+
+```json
+{
+  "message": "Gastei 50 reais no supermercado"
+}
 ```
 
-A camada de domínio deve permanecer independente de detalhes de infraestrutura sempre que possível.
+#### Response
 
----
+```json
+{
+  "status": "success",
+  "response": "Despesa de R$ 50,00 registrada com sucesso."
+}
+```
 
-### Controller
+#### Exemplo
 
-Responsável pela exposição dos endpoints HTTP.
-
-Controllers principais:
-
-```text
-AssistantController
-ConversationController
-ExpenseController
-TtsController
-VoiceController
+```bash
+curl -X POST http://localhost:8080/api/assistant/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Gastei 50 reais no supermercado"}'
 ```
 
 ---
 
-### Infrastructure
+## Assistente por voz
 
-Responsável pelas integrações externas e detalhes técnicos.
+### `POST /api/assistant/voice`
 
-Inclui:
+Recebe um arquivo de áudio, realiza a transcrição e processa a mensagem utilizando o assistente.
+
+### Formato
 
 ```text
-Spring AI
-OpenAI
-PostgreSQL
-STT
-TTS
-configurações HTTP
-persistência
+multipart/form-data
+```
+
+Parâmetro:
+
+```text
+file
+```
+
+#### Exemplo
+
+```bash
+curl -X POST http://localhost:8080/api/assistant/voice \
+  -F "file=@caminho/do/audio.mp3"
 ```
 
 ---
 
-## Stack tecnológica
+# Despesas
 
-| Tecnologia        | Utilização                     |
-| ----------------- | ------------------------------ |
-| Java 21           | Linguagem principal            |
-| Spring Boot 3.5   | Framework backend              |
-| Spring AI         | Integração com IA              |
-| OpenAI            | Modelo de IA e serviços de voz |
-| Spring Data JPA   | Persistência                   |
-| PostgreSQL        | Banco de dados                 |
-| Maven             | Gerenciamento de dependências  |
-| Lombok            | Redução de boilerplate         |
-| OpenAPI / Swagger | Documentação da API            |
-| Docker            | Ambiente de execução           |
+## `GET /api/expenses`
+
+Retorna as despesas cadastradas.
+
+```bash
+curl -X GET http://localhost:8080/api/expenses
+```
 
 ---
 
-## API
+## `GET /api/expenses/{id}`
 
-Nesta seção estão listados todos os endpoints da aplicação com instruções de teste detalhadas utilizando `curl` (com o servidor executando localmente em `http://localhost:8080`).
+Consulta uma despesa específica.
+
+```bash
+curl -X GET http://localhost:8080/api/expenses/1
+```
+
+Caso o recurso não exista:
+
+```text
+HTTP 404 Not Found
+```
 
 ---
 
-### 1. Assistente Financeiro
+## `POST /api/expenses`
 
-#### `POST /api/assistant/chat`
-Envia uma mensagem de texto em linguagem natural para o assistente. A IA interpretará e usará ferramentas se necessário.
+Cria uma nova despesa.
 
-* **Headers:** `Content-Type: application/json`
-* **Request Body:**
-  ```json
-  {
-    "message": "quanto gastei hoje?"
+Exemplo:
+
+```json
+{
+  "amount": 50.00,
+  "category": "FOOD",
+  "location": "Supermercado"
+}
+```
+
+---
+
+## `PUT /api/expenses/{id}`
+
+Atualiza uma despesa existente.
+
+```bash
+curl -X PUT http://localhost:8080/api/expenses/1
+```
+
+---
+
+## `DELETE /api/expenses/{id}`
+
+Remove uma despesa.
+
+```bash
+curl -X DELETE http://localhost:8080/api/expenses/1
+```
+
+---
+
+## `GET /api/expenses/summary`
+
+Retorna o resumo financeiro.
+
+Exemplo:
+
+```json
+{
+  "totalAmount": 250.00,
+  "categories": {
+    "FOOD": 120.00,
+    "TRANSPORT": 130.00
   }
-  ```
-* **Response (200 OK):**
-  ```json
+}
+```
+
+---
+
+# Conversas
+
+## `GET /api/conversations`
+
+Retorna o histórico de interações persistidas entre usuário e assistente.
+
+Exemplo:
+
+```json
+[
   {
-    "status": "success",
-    "response": "Você gastou hoje R$ 200.00"
+    "id": 1,
+    "userMessage": "Gastei 50 reais no supermercado",
+    "assistantResponse": "Despesa registrada com sucesso!",
+    "createdAt": "2026-08-25T09:05:00"
   }
-  ```
-* **Comando de Teste (`curl`):**
-  ```bash
-  curl -X POST http://localhost:8080/api/assistant/chat \
-    -H "Content-Type: application/json" \
-    -d '{"message": "Gastei 50 reais no supermercado"}'
-  ```
+]
+```
 
 ---
 
-#### `POST /api/assistant/voice`
-Envia um arquivo de áudio de voz. A aplicação transcreve o áudio para texto (Speech-to-Text) usando Whisper, processa a mensagem no assistente e retorna a transcrição com a resposta por texto.
+# Text-to-Speech
 
-* **Headers:** `Content-Type: multipart/form-data`
-* **Request Params (Form):**
-  * `file`: O arquivo de áudio (ex: `.mp3`, `.wav`, `.m4a`).
-* **Response (200 OK):**
-  ```json
-  {
-    "transcript": "gastei 50 reais no supermercado",
-    "response": "Despesa de R$ 50.00 no supermercado registrada com sucesso na categoria FOOD!"
-  }
-  ```
-* **Comando de Teste (`curl`):**
-  *(Substitua `caminho/do/audio.mp3` por um arquivo de áudio real)*
-  ```bash
-  curl -X POST http://localhost:8080/api/assistant/voice \
-    -F "file=@caminho/do/audio.mp3"
-  ```
+## `POST /api/tts`
 
----
+Converte texto em áudio.
 
-### 2. Despesas (Expenses)
+Exemplo:
 
-#### `GET /api/expenses`
-Retorna uma lista com todas as despesas persistidas no banco de dados.
+```bash
+curl -X POST \
+  "http://localhost:8080/api/tts?text=Despesa%20registrada%20com%20sucesso" \
+  --output audio.mp3
+```
 
-* **Response (200 OK):**
-  ```json
-  [
-    {
-      "id": 1,
-      "amount": 50.00,
-      "category": "FOOD",
-      "location": "Supermercado",
-      "createdAt": "2026-08-25T09:00:00"
-    }
-  ]
-  ```
-* **Comando de Teste (`curl`):**
-  ```bash
-  curl -X GET http://localhost:8080/api/expenses
-  ```
+A resposta é disponibilizada como:
+
+```text
+audio/mpeg
+```
 
 ---
 
-#### `GET /api/expenses/summary`
-Retorna o resumo financeiro atualizado, incluindo o total geral gasto e a distribuição das despesas por categoria.
+# Swagger / OpenAPI
 
-* **Response (200 OK):**
-  ```json
-  {
-    "totalAmount": 250.00,
-    "categories": {
-      "FOOD": 120.00,
-      "TRANSPORT": 130.00
-    }
-  }
-  ```
-* **Comando de Teste (`curl`):**
-  ```bash
-  curl -X GET http://localhost:8080/api/expenses/summary
-  ```
-
----
-
-### 3. Histórico de Conversas (Conversations)
-
-#### `GET /api/conversations`
-Retorna a lista completa de interações gravadas no histórico entre o usuário e o assistente.
-
-* **Response (200 OK):**
-  ```json
-  [
-    {
-      "id": 1,
-      "userMessage": "Gastei 50 reais no supermercado",
-      "assistantResponse": "Despesa registrada com sucesso!",
-      "createdAt": "2026-08-25T09:05:00"
-    }
-  ]
-  ```
-* **Comando de Teste (`curl`):**
-  ```bash
-  curl -X GET http://localhost:8080/api/conversations
-  ```
-
----
-
-### 4. Text-to-Speech (TTS)
-
-#### `POST /api/tts`
-Gera um arquivo de áudio falado a partir de um texto fornecido.
-
-* **Request Params (Query):**
-  * `text`: O texto a ser transformado em fala (ex: `"Olá, tudo bem?"`).
-* **Response (200 OK):**
-  * Retorna o arquivo binário em formato `audio/mpeg` (MP3).
-* **Comando de Teste (`curl`):**
-  ```bash
-  curl -X POST "http://localhost:8080/api/tts?text=Despesa%20registrada%20com%20sucesso" \
-    --output audio.mp3
-  ```
-
-## Swagger
-
-Com a aplicação executando localmente, acesse a interface interativa do Swagger UI para testar as rotas de forma simplificada:
+Com a aplicação em execução, a documentação interativa pode ser acessada em:
 
 ```text
 http://localhost:8080/swagger-ui.html
 ```
 
-### Como testar as rotas no Swagger UI:
-
-#### Testando a rota de Chat (`POST /api/assistant/chat`)
-1. Expanda a seção **assistant-controller** e clique no endpoint `POST /api/assistant/chat`.
-2. Clique no botão **Try it out** no lado direito.
-3. No painel **Request body**, substitua a mensagem de teste por uma de sua preferência (ex: `{"message": "Gastei 50 reais no supermercado"}`).
-4. Clique em **Execute** (botão azul). A resposta da IA aparecerá logo abaixo em *Server response*.
-
-#### Testando a rota de Voz (`POST /api/assistant/voice`)
-1. Expanda a seção **voice-controller** e clique no endpoint `POST /api/assistant/voice`.
-2. Clique no botão **Try it out**.
-3. No campo do parâmetro **file**, clique em **Escolher arquivo** e faça o upload de um arquivo de áudio (como `.mp3`, `.wav` ou `.m4a` contendo um comando falado).
-4. Clique em **Execute**. A API transcreverá e executará a operação, exibindo a resposta em JSON.
+O Swagger permite visualizar e testar os endpoints diretamente pelo navegador.
 
 ---
 
-## Evolução e Melhorias Implementadas
+# Configuração
 
-Para este desafio de projeto, evoluímos a API inteligente implementando as seguintes melhorias:
+## Pré-requisitos
 
-#### 1. Eliminação de Bypasses da IA (Foco no Tool Calling Real)
-* **Antes**: O serviço `AssistantService` interceptava mensagens de consulta como "quanto gastei hoje" de forma rígida através de condicionais Java hardcoded (`message.toLowerCase().contains(...)`). Isso burlava o orquestrador do Spring AI e impedia a interpretação inteligente do modelo para outras formulações da mesma intenção.
-* **Depois**: Removemos os desvios hardcoded. Criamos e registramos ferramentas de consulta nativas (`consultar_resumo_gastos` e `consultar_gastos_hoje`) no componente `ExpenseTools`. Agora, todas as mensagens passam pelo LLM que determina, via **Tool Calling**, quando executar a consulta de resumos ou valores diários.
-
-#### 2. Alinhamento de Categorias de Domínio no Prompt
-* **Antes**: O prompt de sistema (`SystemPrompts.FINANCIAL_ASSISTANT`) sugeria a categoria `SHOPPING`, que não existe no enum Java `ExpenseCategory` (as categorias reais são `FOOD`, `TRANSPORT`, `HEALTH`, `ENTERTAINMENT`, `EDUCATION`, `OTHER`). Isso causava inconsistências de fallback no backend.
-* **Depois**: Ajustamos o prompt de sistema para listar exatamente as categorias do domínio, garantindo que o modelo passe valores válidos e minimizando categorizações errôneas como `OTHER`.
-
-#### 3. Cobertura de Testes Unitários
-* Adicionamos testes unitários cobrindo as novas ferramentas e o novo fluxo em [ExpenseToolsTest.java](file:///c:/Users/maria/Desktop/budget-ai-api/src/test/java/com/budgetai/tools/ExpenseToolsTest.java) e [AssistantServiceTest.java](file:///c:/Users/maria/Desktop/budget-ai-api/src/test/java/com/budgetai/application/service/AssistantServiceTest.java). A suíte de testes do projeto continua com 100% de sucesso e atende perfeitamente ao limite mínimo de cobertura definido pelo JaCoCo (mínimo de 50%).
-
-#### 4. Documentação de Arquitetura e Engenharia de IA
-* Completamos os arquivos de documentação estruturada do projeto sob a pasta `docs/`:
-  - [current-state-analysis.md](file:///c:/Users/maria/Desktop/budget-ai-api/docs/current-state-analysis.md): Mapeamento técnico detalhado do projeto, fluxos de áudio/texto e arquitetura limpa.
-  - [technical-backlog.md](file:///c:/Users/maria/Desktop/budget-ai-api/docs/technical-backlog.md): Registro da melhoria de Tool Calling implementada e próximas pendências de arquitetura.
-  - [roadmap.md](file:///c:/Users/maria/Desktop/budget-ai-api/docs/roadmap.md): Atualização das fases do roadmap e conclusão da Fase 1 (Stabilize).
-
-#### 5. Implementação de CRUD Completo de Despesas
-* Adição das operações fundamentais de gerenciamento de despesas de forma direta no `ExpenseController` utilizando a arquitetura Clean Architecture/DDD:
-  * **Criação manual** (`POST /api/expenses`) utilizando DTOs de validação.
-  * **Consulta individual por ID** (`GET /api/expenses/{id}`) com lançamento de `ResourceNotFoundException` gerando retorno HTTP `404 Not Found` caso o ID não exista.
-  * **Edição de dados** (`PUT /api/expenses/{id}`) integrando a validação de regras de domínio da camada core (`ExpenseDomainService`).
-  * **Exclusão física** (`DELETE /api/expenses/{id}`) com verificação prévia de existência.
-* Adição de cobertura completa de testes unitários para todos os casos de uso criados e novas rotas do controlador.
-
----
-
-## Configuração
-
-### Pré-requisitos
-
-Antes de executar o projeto, instale:
+Antes de executar o projeto, tenha instalado:
 
 * Java 21
 * Maven
 * Docker
 * Docker Compose
-* PostgreSQL, caso não utilize o container disponibilizado pelo projeto
 
-Também é necessário possuir uma chave de API do provedor de IA utilizado pela aplicação.
+O PostgreSQL pode ser executado através do Docker Compose disponibilizado pelo projeto.
+
+Também é necessário configurar a chave da API do provedor de IA.
 
 ---
 
-## Variáveis de ambiente
+# Variáveis de ambiente
 
-Não coloque chaves de API diretamente no código-fonte.
+A chave da API **não deve ser armazenada no código-fonte**.
 
 Configure:
 
-```bash
+```text
 OPENAI_API_KEY=your_api_key
 ```
 
-#### Windows PowerShell
+## Windows PowerShell
 
 ```powershell
 $env:OPENAI_API_KEY="your_api_key"
 ```
 
-#### Linux / macOS
+## Linux / macOS
 
 ```bash
 export OPENAI_API_KEY="your_api_key"
 ```
 
+> Nunca versione chaves, tokens, senhas ou outros secrets no Git.
+
 ---
 
-## Executando localmente
+# Executando localmente
 
 Clone o projeto:
 
@@ -608,43 +610,47 @@ Entre no diretório:
 cd budget-ai-api
 ```
 
-Compile:
+Compile o projeto:
 
 ```bash
 mvn clean install
 ```
 
-Execute:
+Execute a aplicação:
 
 ```bash
 mvn spring-boot:run
 ```
 
+Após a inicialização, a API estará disponível em:
+
+```text
+http://localhost:8080
+```
+
 ---
 
-## Executando com Docker
+# Executando com Docker
 
-O projeto possui configuração de Docker Compose.
-
-Para iniciar os serviços:
+Inicie os containers:
 
 ```bash
 docker compose up -d
 ```
 
-Para verificar os containers:
+Verifique o ambiente:
 
 ```bash
 docker compose ps
 ```
 
-Para visualizar os logs:
+Visualize os logs:
 
 ```bash
 docker compose logs -f
 ```
 
-Para parar o ambiente:
+Para encerrar:
 
 ```bash
 docker compose down
@@ -652,327 +658,250 @@ docker compose down
 
 ---
 
-## Testes
+# Testes
 
-Execute os testes com:
+Execute os testes unitários:
 
 ```bash
 mvn test
 ```
 
-Para uma validação completa:
+Para executar a validação completa do projeto:
 
 ```bash
 mvn clean verify
 ```
 
+O projeto utiliza **JaCoCo** para acompanhamento da cobertura de testes.
+
+A configuração atual estabelece um limite mínimo de cobertura de código.
+
 ---
 
-## Fluxo principal
+# Segurança
 
-### Cadastro de uma despesa através da IA
+Atualmente, o projeto utiliza variáveis de ambiente para evitar o versionamento de credenciais externas.
+
+## Estado atual
+
+* Credenciais externas fora do código-fonte.
+* Validação de entradas nos endpoints aplicáveis.
+* Tratamento global de exceções.
+* Resposta `404 Not Found` para recursos inexistentes.
+
+## Próximas evoluções
+
+* [ ] Spring Security
+* [ ] Autenticação JWT
+* [ ] OAuth2
+* [ ] Gerenciamento de usuários
+* [ ] Autorização baseada em usuário
+* [ ] Rate limiting
+* [ ] Gerenciamento seguro de secrets
+* [ ] Auditoria
+* [ ] Observabilidade de operações sensíveis
+
+---
+
+# Engenharia de IA
+
+O projeto explora alguns conceitos importantes de engenharia de aplicações com LLMs.
+
+## Separação entre IA e domínio
 
 ```text
-1. Usuário envia mensagem
-          │
-          ▼
-2. AssistantController
-          │
-          ▼
-3. AssistantService
-          │
-          ▼
-4. Spring AI / ChatClient
-          │
-          ▼
-5. LLM interpreta a intenção
-          │
-          ▼
-6. LLM solicita Tool Calling
-          │
-          ▼
-7. ExpenseTools
-          │
-          ▼
-8. CreateExpenseUseCase
-          │
-          ▼
-9. Domain
-          │
-          ▼
-10. Repository
-          │
-          ▼
-11. PostgreSQL
-          │
-          ▼
-12. Resultado
-          │
-          ▼
-13. Resposta ao usuário
+             LLM
+              │
+              │ interpretação
+              ▼
+        Tool Calling
+              │
+              ▼
+          Tool Layer
+              │
+              ▼
+           Use Case
+              │
+              ▼
+            Domain
+              │
+              ▼
+         Persistence
 ```
+
+O LLM não deve ser considerado uma camada de negócio.
+
+Sua responsabilidade é interpretar a linguagem natural e selecionar as ferramentas disponíveis.
+
+A aplicação continua responsável por:
+
+* validação;
+* regras de negócio;
+* persistência;
+* consistência dos dados;
+* tratamento de erros.
 
 ---
 
-## Princípios arquiteturais
+# Documentação complementar
 
-O projeto foi estruturado seguindo alguns princípios importantes.
-
-#### 1. IA não é regra de negócio
-
-O modelo de IA interpreta a intenção.
-
-As regras continuam dentro da aplicação.
+Para evitar que o README concentre toda a documentação técnica, o projeto possui documentos complementares em `docs/`.
 
 ```text
-IA
- ↓
-Intenção
- ↓
-Tool
- ↓
-Use Case
- ↓
-Domain
+docs/
+├── current-state-analysis.md
+├── technical-backlog.md
+└── roadmap.md
 ```
+
+### Current State Analysis
+
+Contém a análise técnica do estado atual da aplicação, arquitetura e principais fluxos.
+
+### Technical Backlog
+
+Centraliza melhorias técnicas, decisões e pendências arquiteturais.
+
+### Roadmap
+
+Apresenta a evolução planejada do projeto.
 
 ---
 
-#### 2. Baixo acoplamento
+# Roadmap
 
-Integrações externas são isoladas em infraestrutura.
-
-Por exemplo:
-
-```text
-OpenAiSttService
-OpenAiTtsService
-OpenAiIntegration
-```
-
-Isso facilita a substituição futura de fornecedores.
-
----
-
-#### 3. Separação de responsabilidades
-
-Cada camada possui uma responsabilidade específica.
-
-```text
-Controller → HTTP
-Application → Use Cases
-Domain → Business Rules
-Infrastructure → External Systems
-```
-
----
-
-## Segurança
-
-O projeto atualmente utiliza variáveis de ambiente para proteger credenciais externas.
-
-Nunca faça:
-
-```yaml
-api-key: sk-xxxxxxxx
-```
-
-Prefira:
-
-```yaml
-api-key: ${OPENAI_API_KEY}
-```
-
-Também é recomendado adicionar futuramente:
-
-* autenticação;
-* autorização;
-* JWT;
-* gerenciamento de usuários;
-* rate limiting;
-* proteção de endpoints;
-* auditoria;
-* gerenciamento seguro de secrets.
-
----
-
-## Roadmap
-
-### MVP
+## Concluído
 
 * [x] API REST
-* [x] Cadastro de despesas
-* [x] Consulta de despesas
-* [x] Resumo financeiro
-* [x] Assistente com IA
-* [x] Spring AI
-* [x] Tool Calling
+* [x] CRUD de despesas
 * [x] PostgreSQL
-* [x] OpenAPI / Swagger
-* [x] Estrutura Clean Architecture / DDD
+* [x] Spring Boot
+* [x] Spring AI
+* [x] Integração com OpenAI
+* [x] Tool Calling
+* [x] Assistente financeiro
+* [x] Persistência de conversas
+* [x] Arquitetura baseada em Clean Architecture/DDD
+* [x] STT
+* [x] TTS
+* [x] Documentação OpenAPI/Swagger
+* [x] Testes unitários
+* [x] JaCoCo
+* [x] Pipeline de CI
 
-### Próximas evoluções
+## Próximos passos
 
-* [ ] Autenticação JWT
+* [ ] Autenticação e autorização
 * [ ] Gestão de usuários
-* [ ] Controle de autorização
-* [ ] Persistência completa de conversas
-* [ ] Melhorias no contexto conversacional
-* [ ] STT completo
-* [ ] TTS completo
+* [ ] Contexto conversacional avançado
 * [ ] Streaming de voz
-* [ ] Dashboard financeiro
-* [ ] Frontend web
-* [ ] Aplicação mobile
 * [ ] Observabilidade
 * [ ] Métricas
-* [ ] Logs estruturados
-* [ ] Tracing distribuído
-* [ ] CI/CD com GitHub Actions
-* [ ] Deploy em AWS
+* [ ] Distributed tracing
+* [ ] Dashboard
+* [ ] Frontend Web
+* [ ] Aplicativo mobile
+* [ ] Deploy AWS
 * [ ] Infraestrutura como código com Terraform
+* [ ] CI/CD completo
 
 ---
 
-## Evolução para produção
+# Arquitetura futura
 
-Uma possível arquitetura futura:
+A evolução planejada considera uma arquitetura preparada para execução em ambiente cloud:
 
 ```text
-                    ┌───────────────┐
-                    │ Mobile / Web  │
-                    └───────┬───────┘
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │ API Gateway   │
-                    └───────┬───────┘
-                            │
-                            ▼
-                    ┌────────────────────┐
-                    │   Budget AI API    │
-                    │    Spring Boot     │
-                    └─────────┬──────────┘
+                     ┌──────────────────┐
+                     │    Web / Mobile  │
+                     └────────┬─────────┘
                               │
-             ┌────────────────┼────────────────┐
-             │                │                │
-             ▼                ▼                ▼
-        PostgreSQL          Redis          OpenAI
-             │                                 │
-             │                                 │
-             └────────────────┬────────────────┘
                               ▼
-                         Observability
-                      Logs / Metrics / Traces
+                     ┌──────────────────┐
+                     │   API Gateway    │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │  Budget AI API   │
+                     │   Spring Boot    │
+                     └────────┬─────────┘
+                              │
+              ┌───────────────┼────────────────┐
+              │               │                │
+              ▼               ▼                ▼
+        PostgreSQL          Redis            OpenAI
+              │                                │
+              └────────────────┬───────────────┘
+                               │
+                               ▼
+                       Observabilidade
+                    Logs / Metrics / Traces
 ```
+
+Essa arquitetura representa uma **visão futura**, não necessariamente todos os componentes atualmente implementados.
 
 ---
 
-## Possíveis evoluções arquiteturais
+# Status do projeto
 
-Conforme o projeto crescer, algumas decisões podem ser introduzidas gradualmente:
+**Status:** Em desenvolvimento
 
-#### Segurança
+**Tipo:** Projeto experimental / laboratório de arquitetura
 
-```text
-Spring Security
-JWT
-OAuth2
-Keycloak
-```
-
-#### Observabilidade
-
-```text
-Micrometer
-Prometheus
-Grafana
-OpenTelemetry
-```
-
-#### Infraestrutura
-
-```text
-AWS
-Docker
-Terraform
-CI/CD
-GitHub Actions
-```
-
-#### Performance
-
-```text
-Redis
-Cache
-Connection Pool
-Async Processing
-```
-
-#### IA
-
-```text
-Tool Calling
-Structured Output
-Prompt Versioning
-AI Observability
-Fallback Models
-Provider Abstraction
-```
-
----
-
-## Status do projeto
-
-**Status:** 🚧 Em desenvolvimento
-
-**Tipo:** Projeto de estudo / laboratório de arquitetura
-
-**Foco principal:**
+### Principais áreas de estudo
 
 ```text
 Java
 Spring Boot
 Spring AI
 IA Generativa
+LLMs
+Tool Calling
 Clean Architecture
 DDD
 REST API
-Voice AI
-Tool Calling
+STT / TTS
+PostgreSQL
+Docker
+Testes
+DevOps
+Cloud
 ```
 
 ---
 
-## Objetivo educacional
+# Objetivo educacional
 
-Este projeto também funciona como laboratório para estudar conceitos modernos de backend e Inteligência Artificial aplicada.
+O Budget AI API também funciona como laboratório para estudar a integração entre desenvolvimento backend tradicional e aplicações baseadas em Inteligência Artificial.
 
-Principais conhecimentos explorados:
+Os principais conceitos explorados incluem:
 
-* Desenvolvimento de APIs REST.
+* Desenvolvimento backend com Java.
+* Spring Boot.
 * Arquitetura de software.
 * Clean Architecture.
 * Domain-Driven Design.
-* Spring Boot.
 * Spring AI.
 * LLMs.
-* Prompt Engineering.
 * Tool Calling.
+* Engenharia de prompts.
 * Integração com APIs externas.
 * Processamento de voz.
 * Persistência relacional.
 * Docker.
+* Testes automatizados.
+* CI.
 * Documentação de APIs.
-* Boas práticas de desenvolvimento backend.
+* Práticas de DevOps e Cloud.
 
 ---
 
-## Autora
+#  Autora
 
 **Maria Correia**
 
-Projeto desenvolvido como parte da jornada de estudos em:
+Projeto desenvolvido durante a jornada de estudos em:
 
 ```text
 Java Backend
@@ -985,19 +914,19 @@ DevOps
 
 ---
 
-## Licença
+# Licença
 
-Este projeto está disponível para fins educacionais.
+Este projeto possui finalidade educacional.
 
-Consulte o arquivo `LICENSE` para obter as condições de uso e distribuição.
+Consulte o arquivo `LICENSE` para conhecer as condições de uso e distribuição.
 
 ---
 
-### Contribuição
+# Contribuição
 
-Sugestões, melhorias e ideias são bem-vindas.
+Sugestões e melhorias são bem-vindas.
 
-Para contribuir:
+Para criar uma nova branch:
 
 ```bash
 git checkout -b feature/minha-feature
@@ -1020,13 +949,13 @@ Depois, abra um Pull Request.
 
 ---
 
-### Referências
+## 🔗 Referências
 
-* Spring Boot
-* Spring AI
-* OpenAI API
-* PostgreSQL
-* Docker
-* OpenAPI
-* Domain-Driven Design
+* [Spring Boot](https://spring.io/projects/spring-boot)
+* [Spring AI](https://spring.io/projects/spring-ai)
+* [OpenAI](https://openai.com/)
+* [PostgreSQL](https://www.postgresql.org/)
+* [Docker](https://www.docker.com/)
+* [OpenAPI](https://www.openapis.org/)
 * Clean Architecture
+* Domain-Driven Design
