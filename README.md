@@ -806,6 +806,52 @@ Apresenta a evolução planejada do projeto.
 * [ ] CI/CD completo
 
 ---
+# Evoluções futuras
+
+Implementação de MCP Server
+
+Como evolução futura, o projeto poderá avaliar a adoção do Model Context Protocol (MCP) para disponibilizar as funcionalidades do backend como ferramentas que possam ser descobertas e utilizadas por clientes de IA compatíveis com MCP.
+
+Atualmente, o projeto utiliza Spring AI e Tool Calling, permitindo que o LLM selecione ferramentas da aplicação para executar operações de negócio. Essa abordagem já estabelece uma separação clara entre a interpretação realizada pela IA e a execução das regras de negócio.
+
+A evolução para MCP será estudada como uma camada de integração padronizada, sem substituir a responsabilidade do domínio ou dos casos de uso.
+
+Visão arquitetural futura
+
+                    🤖 Cliente de IA
+                           │
+                           ▼
+                      MCP Client
+                           │
+                           ▼
+                    MCP Server
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+       Registrar       Consultar      Consultar
+         gasto          gastos          resumo
+              │            │            │
+              └────────────┼────────────┘
+                           ▼
+                    Budget AI API
+                     Spring Boot
+                           │
+                           ▼
+                      PostgreSQL
+
+Possíveis ferramentas
+
+registrar_gasto
+consultar_gastos_hoje
+consultar_resumo_gastos
+
+A proposta é manter a mesma regra arquitetural do projeto:
+
+A IA interpreta a intenção. A aplicação executa as regras de negócio.
+
+Nesse cenário, o MCP atuaria como uma camada de integração para disponibilizar ferramentas ao cliente de IA, enquanto os Use Cases, Domain e Persistence continuariam responsáveis pela execução das operações.
+
+Status: 🔵 Planejado — evolução futura
 
 # Arquitetura futura
 
