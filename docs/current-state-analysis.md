@@ -87,7 +87,10 @@ Estão expostas no `ExpenseTools` as ferramentas do sistema:
 - Tabelas auto-criadas pelo Hibernate para fins de desenvolvimento (`update` mode).
 
 ## 12. Segurança
-- Chave de API da OpenAI (`OPENAI_API_KEY`) é lida das variáveis de ambiente ou arquivo `.env`, garantindo que credenciais não sejam salvas em disco de forma insegura.
+- A chave da OpenAI é configurada por `OPENAI_API_KEY`.
+- As credenciais do banco sao lidas pelas variaveis `DB_URL`, `DB_USERNAME` e `DB_PASSWORD` na aplicacao, e `POSTGRES_DB`, `POSTGRES_USER` e `POSTGRES_PASSWORD` no Docker Compose. Um `.env.example` documenta os nomes sem conter segredo.
+- Qualquer credencial anteriormente versionada deve ser rotacionada.
+- Ainda nao ha autenticacao, autorizacao ou isolamento de dados por usuario.
 
 ## 13. Testes
 - Suíte completa de testes unitários usando JUnit 5 e Mockito cobrindo serviços, casos de uso, controladores e componentes de IA (com mocks do ChatClient).
@@ -96,7 +99,8 @@ Estão expostas no `ExpenseTools` as ferramentas do sistema:
 - Docker Compose configurado para levantar um container PostgreSQL na porta 5432.
 
 ## 15. Observabilidade
-- Logs detalhados configurados via SLF4J nas classes principais.
+- Logs via SLF4J existem nas classes principais.
+- Ainda nao ha metricas de latencia, tokens, custo, tool calls, correlacao de requisicao ou alertas para chamadas de IA.
 
 ## 16. Pontos fortes
 - Arquitetura limpa muito bem segmentada que isola regras de domínio de frameworks de IA e banco.
@@ -110,13 +114,19 @@ Estão expostas no `ExpenseTools` as ferramentas do sistema:
 ## 18. Dívidas técnicas
 - Faltam migrações estruturadas do banco de dados (Flyway ou Liquibase).
 - O auto-create do DDL pelo Hibernate deve ser desativado para ambientes de produção.
+- Faltam timeout explicito e tratamento de erros especificos nas integracoes externas.
+- Faltam versionamento de prompts, avaliacao automatizada, workflow, agente limitado e MCP.
 
 ## 19. Riscos
 - Risco de consumo elevado de tokens e latência devido ao fluxo síncrono de áudio -> STT -> LLM -> Persistência -> Resposta.
+- CORS permissivo, configuracao de DDL para desenvolvimento e ausencia de identidade impedem exposicao segura para multiplos usuarios.
+- O historico de conversas e persistido, mas ainda nao e usado como contexto limitado e isolado nas chamadas ao modelo.
 
 ## 20. Funcionalidades faltantes
 - Exportação de relatórios financeiros em PDF/CSV.
 - Suporte a múltiplos usuários (autenticação e isolamento de contas).
+- AI Harness com contexto, politicas, guardrails e observabilidade.
+- Avaliacao de IA, workflows determinísticos, agentes limitados e MCP.
 
 ## 21. Top 10 recomendações
 1. Implementar autenticação JWT (Spring Security).

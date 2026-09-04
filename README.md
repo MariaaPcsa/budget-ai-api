@@ -572,23 +572,43 @@ Também é necessário configurar a chave da API do provedor de IA.
 
 # Variáveis de ambiente
 
-A chave da API **não deve ser armazenada no código-fonte**.
+A chave da API e as credenciais do banco **não devem ser armazenadas no código-fonte**.
+
+Use `.env.example` como referencia para criar um arquivo `.env` local, que ja esta ignorado pelo Git. O Docker Compose le esse arquivo automaticamente. Ao executar o Spring Boot diretamente, exporte as mesmas variaveis no terminal.
 
 Configure:
 
 ```text
+POSTGRES_DB=budget_ai
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_local_database_password
+DB_URL=jdbc:postgresql://localhost:5432/budget_ai
+DB_USERNAME=postgres
+DB_PASSWORD=your_local_database_password
 OPENAI_API_KEY=your_api_key
 ```
 
 ## Windows PowerShell
 
 ```powershell
+$env:POSTGRES_DB="budget_ai"
+$env:POSTGRES_USER="postgres"
+$env:POSTGRES_PASSWORD="your_local_database_password"
+$env:DB_URL="jdbc:postgresql://localhost:5432/budget_ai"
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="your_local_database_password"
 $env:OPENAI_API_KEY="your_api_key"
 ```
 
 ## Linux / macOS
 
 ```bash
+export POSTGRES_DB="budget_ai"
+export POSTGRES_USER="postgres"
+export POSTGRES_PASSWORD="your_local_database_password"
+export DB_URL="jdbc:postgresql://localhost:5432/budget_ai"
+export DB_USERNAME="postgres"
+export DB_PASSWORD="your_local_database_password"
 export OPENAI_API_KEY="your_api_key"
 ```
 

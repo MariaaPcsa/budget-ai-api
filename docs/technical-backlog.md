@@ -11,9 +11,9 @@
 **Solução proposta:** Criação das tools de consulta (`consultar_resumo_gastos` e `consultar_gastos_hoje`) expostas ao Spring AI e remoção das condicionais hardcoded do serviço.
 
 **Arquivos afetados:**
-- [AssistantService.java](file:///c:/Users/maria/Desktop/budget-ai-api/src/main/java/com/budgetai/application/service/AssistantService.java)
-- [ExpenseTools.java](file:///c:/Users/maria/Desktop/budget-ai-api/src/main/java/com/budgetai/tools/ExpenseTools.java)
-- [SystemPrompts.java](file:///c:/Users/maria/Desktop/budget-ai-api/src/main/java/com/budgetai/infrastructure/ai/SystemPrompts.java)
+- `src/main/java/com/budgetai/application/service/AssistantService.java`
+- `src/main/java/com/budgetai/tools/ExpenseTools.java`
+- `src/main/java/com/budgetai/infrastructure/ai/SystemPrompts.java`
 
 **Risco:** Baixo. Foi coberto por testes unitários em `ExpenseToolsTest` e `AssistantServiceTest`.
 
@@ -31,7 +31,7 @@
 
 **Arquivos afetados:**
 - `pom.xml`
-- `src/main/resources/application.properties`
+- `src/main/resources/application.yml`
 - `src/main/resources/db/migration/V1__create_tables.sql`
 
 **Risco:** Médio (necessário rodar testes com o banco atual).
@@ -50,7 +50,7 @@
 
 **Arquivos afetados:**
 - `pom.xml`
-- [AiConfiguration.java](file:///c:/Users/maria/Desktop/budget-ai-api/src/main/java/com/budgetai/infrastructure/ai/AiConfiguration.java)
+- `src/main/java/com/budgetai/infrastructure/ai/AiConfiguration.java`
 
 ---
 
@@ -63,3 +63,27 @@
 **Impacto:** Interrupção total do processamento sem fallback amigável ou retentativas.
 
 **Solução proposta:** Integrar Spring Cloud Circuit Breaker / Resilience4j para tratar timeout e erros 5xx de forma automática com retries inteligentes.
+
+---
+
+### BACK-005 — Credenciais e Configuracao por Ambiente
+
+**Problema:** A configuracao principal contem credencial de banco de dados e configuracoes de desenvolvimento que nao devem ser assumidas em producao.
+
+**Impacto:** Risco de exposicao de segredo e de deploy com configuracao insegura.
+
+**Solucao proposta:** Credenciais de PostgreSQL foram movidas para variaveis de ambiente em `application.yml` e `docker-compose.yml`. Permanecem pendentes perfis explicitos e a revisao de configuracoes de SQL, CORS e DDL por ambiente.
+
+**Risco:** Alto. Rotacionar qualquer credencial que tenha sido compartilhada ou versionada.
+
+---
+
+### BACK-006 — Politicas de Acesso, Contexto e Tools
+
+**Problema:** A aplicacao ainda nao possui autenticacao, isolamento por usuario, limite de contexto, politicas de permissao de tools ou auditoria de chamadas.
+
+**Impacto:** Dados financeiros e futuras capacidades de agente/MCP nao podem ser expostos com seguranca.
+
+**Solucao proposta:** Implementar identidade e autorizacao antes de memoria persistente, agentes com escrita ou MCP exposto; adicionar contexto limitado, allow-list de tools e trilha de auditoria no AI Harness.
+
+**Risco:** Alto para qualquer exposicao multiusuario ou integracao externa.
