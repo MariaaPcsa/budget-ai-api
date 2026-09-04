@@ -28,6 +28,10 @@ public class Expense {
     @Enumerated(EnumType.STRING)
     private ExpenseCategory category;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private String location;
 
     private LocalDateTime createdAt;

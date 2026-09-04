@@ -14,8 +14,8 @@ public class GetExpenseByIdUseCase {
 
     private final ExpenseRepository repository;
 
-    public Expense execute(UUID id) {
-        return repository.findById(id)
+    public Expense execute(UUID userId, UUID id) {
+        return repository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Despesa com ID " + id + " não encontrada"));
     }
 }

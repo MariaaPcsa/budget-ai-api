@@ -13,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.UUID;
+
 @ExtendWith(MockitoExtension.class)
 class SaveConversationUseCaseTest {
 
@@ -31,7 +33,8 @@ class SaveConversationUseCaseTest {
         String userMessage = "Quanto gastei hoje?";
         String aiResponse = "Você gastou hoje R$ 200.00";
 
-        useCase.execute(userMessage, aiResponse);
+        UUID userId = UUID.randomUUID();
+        useCase.execute(userId, userMessage, aiResponse);
 
         ArgumentCaptor<Conversation> captor =
                 ArgumentCaptor.forClass(Conversation.class);
@@ -55,5 +58,7 @@ class SaveConversationUseCaseTest {
         assertNotNull(
                 savedConversation.getCreatedAt()
         );
+
+        assertEquals(userId, savedConversation.getUser().getId());
     }
 }

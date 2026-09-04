@@ -572,27 +572,99 @@ Também é necessário configurar a chave da API do provedor de IA.
 
 # Variáveis de ambiente
 
-A chave da API **não deve ser armazenada no código-fonte**.
+A chave da API e as credenciais do banco **não devem ser armazenadas no código-fonte**.
+
+Use `.env.example` como referencia para criar um arquivo `.env` local, que ja esta ignorado pelo Git. O Docker Compose le esse arquivo automaticamente. Ao executar o Spring Boot diretamente, exporte as mesmas variaveis no terminal.
 
 Configure:
 
 ```text
+POSTGRES_DB=budget_ai
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_local_database_password
+DB_URL=jdbc:postgresql://localhost:5432/budget_ai
+DB_USERNAME=postgres
+DB_PASSWORD=your_local_database_password
 OPENAI_API_KEY=your_api_key
 ```
 
 ## Windows PowerShell
 
 ```powershell
+$env:POSTGRES_DB="budget_ai"
+$env:POSTGRES_USER="postgres"
+$env:POSTGRES_PASSWORD="your_local_database_password"
+$env:DB_URL="jdbc:postgresql://localhost:5432/budget_ai"
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="your_local_database_password"
 $env:OPENAI_API_KEY="your_api_key"
 ```
 
 ## Linux / macOS
 
 ```bash
+export POSTGRES_DB="budget_ai"
+export POSTGRES_USER="postgres"
+export POSTGRES_PASSWORD="your_local_database_password"
+export DB_URL="jdbc:postgresql://localhost:5432/budget_ai"
+export DB_USERNAME="postgres"
+export DB_PASSWORD="your_local_database_password"
 export OPENAI_API_KEY="your_api_key"
 ```
 
 > Nunca versione chaves, tokens, senhas ou outros secrets no Git.
+
+---
+
+# Perfis e acesso do navegador
+
+O perfil `dev` e o padrao local. Ele aplica migrations Flyway e valida o schema com Hibernate. O perfil `prod` tambem valida o schema, desabilita SQL nos logs e exige `APP_CORS_ALLOWED_ORIGINS`.
+
+Ative producao explicitamente:
+
+```text
+SPRING_PROFILES_ACTIVE=prod
+```
+
+O CORS aceita somente as origens configuradas em `APP_CORS_ALLOWED_ORIGINS`. Para multiplas origens, use valores separados por virgula.
+
+As chamadas STT, TTS e de IA usam `OPENAI_CONNECT_TIMEOUT` e `OPENAI_READ_TIMEOUT`. Os valores padrao sao `5s` e `30s`, respectivamente.
+
+---
+
+# Autenticacao
+
+Os endpoints em `/api/**` exigem um token Bearer, exceto os endpoints de autenticacao e a documentacao OpenAPI.
+
+## Cadastro
+
+`POST /api/auth/register`
+
+```json
+{
+  "email": "user@example.com",
+  "password": "a-strong-password"
+}
+```
+
+## Login
+
+`POST /api/auth/login`
+
+```json
+{
+  "email": "user@example.com",
+  "password": "a-strong-password"
+}
+```
+
+As duas operacoes retornam `accessToken`. Envie-o nas chamadas protegidas:
+
+```text
+Authorization: Bearer <accessToken>
+```
+
+Cada despesa e conversa pertence ao usuario identificado pelo token. O identificador do usuario nao e aceito em payloads, tools ou prompts.
 
 ---
 

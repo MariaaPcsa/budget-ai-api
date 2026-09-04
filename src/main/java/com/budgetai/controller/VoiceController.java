@@ -1,6 +1,7 @@
 package com.budgetai.controller;
 
 import com.budgetai.application.dto.VoiceResponseDTO;
+import com.budgetai.application.port.CurrentUserProvider;
 import com.budgetai.application.usecase.VoiceChatUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class VoiceController {
 
     private final VoiceChatUseCase voiceChatUseCase;
+        private final CurrentUserProvider currentUserProvider;
 
     @PostMapping(
             value = "/voice",
@@ -32,7 +34,7 @@ public class VoiceController {
                     ));
         }
 
-        VoiceResponseDTO response = voiceChatUseCase.execute(file);
+        VoiceResponseDTO response = voiceChatUseCase.execute(currentUserProvider.currentUserId(), file);
 
         return ResponseEntity.ok(response);
     }

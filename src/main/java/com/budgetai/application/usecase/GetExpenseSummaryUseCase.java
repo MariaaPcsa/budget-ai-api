@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,9 +18,9 @@ public class GetExpenseSummaryUseCase {
 
     private final ExpenseRepository repository;
 
-    public ExpenseSummaryDTO execute() {
+        public ExpenseSummaryDTO execute(UUID userId) {
 
-        List<Expense> expenses = repository.findAll();
+                List<Expense> expenses = repository.findAllByUserId(userId);
 
         BigDecimal total = expenses.stream()
                 .map(Expense::getAmount)

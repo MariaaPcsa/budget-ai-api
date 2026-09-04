@@ -24,6 +24,10 @@ public class Conversation {
     @Column(name = "ai_response", columnDefinition = "TEXT")
     private String aiResponse;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

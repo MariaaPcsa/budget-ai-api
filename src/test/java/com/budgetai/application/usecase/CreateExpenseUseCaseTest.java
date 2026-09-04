@@ -11,6 +11,7 @@ import com.budgetai.domain.valueobject.ExpenseCategory;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +57,8 @@ class CreateExpenseUseCaseTest {
                 .thenReturn(savedExpense);
 
         // executa
-        Expense result = useCase.execute(dto);
+        UUID userId = UUID.randomUUID();
+        Expense result = useCase.execute(userId, dto);
 
         // validações
         assertEquals("iFood",

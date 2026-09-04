@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -33,26 +34,28 @@ class GetExpensesUseCaseTest {
                         .description("iFood")
                         .build();
 
-        when(repository.findAll())
+        UUID userId = UUID.randomUUID();
+        when(repository.findAllByUserId(userId))
                 .thenReturn(List.of(expense));
 
         List<Expense> result =
-                useCase.execute();
+                useCase.execute(userId);
 
         assertEquals(1, result.size());
 
         verify(repository)
-                .findAll();
+                .findAllByUserId(userId);
     }
 
     @Test
     void shouldReturnEmptyList() {
 
-        when(repository.findAll())
+        UUID userId = UUID.randomUUID();
+        when(repository.findAllByUserId(userId))
                 .thenReturn(List.of());
 
         List<Expense> result =
-                useCase.execute();
+                useCase.execute(userId);
 
         assertTrue(result.isEmpty());
     }

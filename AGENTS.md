@@ -799,3 +799,67 @@ Ao iniciar o desenvolvimento de qualquer nova tarefa, devemos criar uma branch s
 3. **Desenvolver:** Implementar as alterações em pequenos commits, com mensagens claras e semânticas.
 4. **Push e Pull Request:** Enviar a branch para o remoto (`git push origin tipo/nome-da-branch`) e realizar o merge via Pull Request (ou merge localmente se aprovado explicitamente).
 5. **Deletar:** Após o merge, deletar a branch para manter o repositório limpo.
+
+---
+
+# 31. AI Harness
+
+O AI Harness coordena a integração da aplicação com modelos de IA. Ele não substitui os casos de uso nem contém regras financeiras.
+
+Responsabilidades do Harness:
+
+* selecionar prompt e registrar sua versão;
+* montar contexto limitado, rastreável e autorizado;
+* aplicar políticas de ferramentas, permissões e confirmações;
+* encaminhar handoffs entre workflow, avaliador ou agente;
+* registrar latência, modelo, uso de tokens, custo, ferramentas chamadas e falhas;
+* aplicar guardrails para prompt injection, saída insegura e chamadas não autorizadas.
+
+Preservar sempre o fluxo:
+
+```text
+Entrada
+  ↓
+AI Harness
+  ↓
+LLM / Tools
+  ↓
+Application / Use Case
+  ↓
+Domain
+```
+
+Tools, MCP Tools e agentes são adaptadores para casos de uso existentes. Eles não podem acessar repositórios nem implementar regras de negócio diretamente.
+
+## Contexto e memória
+
+* Contexto conversacional deve ser limitado por janela, associado ao usuário e observável.
+* Não enviar histórico, dados financeiros ou instruções de outras conversas sem autorização explícita.
+* Memória de longo prazo exige política de retenção, finalidade, remoção e isolamento por usuário antes de ser implementada.
+
+## Workflows, avaliadores e agentes
+
+* Preferir workflows determinísticos quando as etapas forem conhecidas.
+* Avaliadores de IA são sinais de qualidade; não autorizam transações nem substituem validações de domínio.
+* Um agente só pode ser introduzido para um objetivo que não seja atendido por workflow, com allow-list de tools, limite de passos, timeout, limite de custo e trilha de auditoria.
+* Escritas financeiras por agente exigem confirmação humana ou regra explícita aprovada no caso de uso.
+
+## MCP
+
+* MCP Server deve adaptar ferramentas, resources e prompts para a camada Application.
+* MCP Client deve aceitar apenas servidores autorizados, com timeout, autenticação, política de permissões e auditoria.
+* Nenhum MCP Tool pode expor credenciais, dados de outro usuário ou acesso irrestrito à infraestrutura.
+
+---
+
+# 32. Histórico de evolução de IA
+
+Toda alteração de prompt, tool, avaliação, workflow, agente, MCP ou política do Harness deve registrar:
+
+1. contexto e decisão em ADR quando houver impacto arquitetural;
+2. comportamento alterado, versão e compatibilidade;
+3. testes, métricas ou casos de avaliação usados como evidência;
+4. impacto de segurança, custo e dados;
+5. plano de rollback quando a mudança afetar produção.
+
+Os registros ficam em `CHANGELOG.md`, `docs/decisions/` e `docs/ai-change-history.md`. A documentação só pode marcar um recurso como implementado quando houver evidência no código e testes correspondentes.

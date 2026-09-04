@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -41,11 +42,12 @@ class GetExpenseSummaryUseCaseTest {
                 .category(ExpenseCategory.TRANSPORT)
                 .build();
 
-        when(repository.findAll())
+        UUID userId = UUID.randomUUID();
+        when(repository.findAllByUserId(userId))
                 .thenReturn(List.of(e1, e2));
 
         ExpenseSummaryDTO result =
-                useCase.execute();
+                useCase.execute(userId);
 
         assertEquals(
                 new BigDecimal("150"),
@@ -66,11 +68,12 @@ class GetExpenseSummaryUseCaseTest {
     @Test
     void shouldReturnEmptySummary() {
 
-        when(repository.findAll())
+        UUID userId = UUID.randomUUID();
+        when(repository.findAllByUserId(userId))
                 .thenReturn(List.of());
 
         ExpenseSummaryDTO result =
-                useCase.execute();
+                useCase.execute(userId);
 
         assertEquals(
                 BigDecimal.ZERO,

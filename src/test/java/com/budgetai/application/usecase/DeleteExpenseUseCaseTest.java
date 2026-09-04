@@ -23,22 +23,24 @@ class DeleteExpenseUseCaseTest {
 
     @Test
     void shouldDeleteExpenseSuccessfully() {
+        UUID userId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
-        when(repository.existsById(id)).thenReturn(true);
+        when(repository.existsByIdAndUserId(id, userId)).thenReturn(true);
 
-        useCase.execute(id);
+        useCase.execute(userId, id);
 
-        verify(repository).existsById(id);
+        verify(repository).existsByIdAndUserId(id, userId);
         verify(repository).deleteById(id);
     }
 
     @Test
     void shouldThrowResourceNotFoundExceptionWhenNotFound() {
+        UUID userId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
-        when(repository.existsById(id)).thenReturn(false);
+        when(repository.existsByIdAndUserId(id, userId)).thenReturn(false);
 
-        assertThrows(ResourceNotFoundException.class, () -> useCase.execute(id));
-        verify(repository).existsById(id);
+        assertThrows(ResourceNotFoundException.class, () -> useCase.execute(userId, id));
+        verify(repository).existsByIdAndUserId(id, userId);
         verify(repository, never()).deleteById(any(UUID.class));
     }
 }

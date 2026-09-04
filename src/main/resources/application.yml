@@ -3,21 +3,11 @@ server:
 
 spring:
 
-  datasource:
-    url: jdbc:postgresql://localhost:5432/budget_ai
-    username: postgres
-    password: maria
-    driver-class-name: org.postgresql.Driver
+  application:
+    name: budget-ai-api
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-    show-sql: true
-
-    properties:
-      hibernate:
-        format_sql: true
+  profiles:
+    default: dev
 
   ai:
     openai:
@@ -44,3 +34,17 @@ openai:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
+  initial-admin:
+    email: ${INITIAL_ADMIN_EMAIL:}
+    password: ${INITIAL_ADMIN_PASSWORD:}
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
+  http:
+    connect-timeout: ${OPENAI_CONNECT_TIMEOUT:5s}
+    read-timeout: ${OPENAI_READ_TIMEOUT:30s}

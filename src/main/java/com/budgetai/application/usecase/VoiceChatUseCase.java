@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -17,7 +19,7 @@ public class VoiceChatUseCase {
     private final AssistantService assistantService;
     private final SaveConversationUseCase saveConversationUseCase;
 
-    public VoiceResponseDTO execute(MultipartFile audioFile) {
+    public VoiceResponseDTO execute(UUID userId, MultipartFile audioFile) {
 
         if (audioFile == null || audioFile.isEmpty()) {
 
@@ -71,6 +73,7 @@ public class VoiceChatUseCase {
              */
 
             saveConversationUseCase.execute(
+                    userId,
                     transcript,
                     response
             );

@@ -32,6 +32,7 @@ class UpdateExpenseUseCaseTest {
 
     @Test
     void shouldUpdateExpenseSuccessfully() {
+        UUID userId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
         Expense existingExpense = Expense.builder()
                 .id(id)
@@ -47,36 +48,38 @@ class UpdateExpenseUseCaseTest {
         dto.setCategory("FOOD");
         dto.setLocation("Nova Loja");
 
-        when(repository.findById(id)).thenReturn(Optional.of(existingExpense));
+        when(repository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(existingExpense));
         when(repository.save(any(Expense.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Expense result = useCase.execute(id, dto);
+        Expense result = useCase.execute(userId, id, dto);
 
         assertNotNull(result);
         assertEquals("Novo", result.getDescription());
         assertEquals(BigDecimal.valueOf(20), result.getAmount());
         assertEquals("Nova Loja", result.getLocation());
         assertEquals("FOOD", result.getCategory().name());
-        verify(repository).findById(id);
+        verify(repository).findByIdAndUserId(id, userId);
         verify(repository).save(any(Expense.class));
     }
 
     @Test
     void shouldThrowResourceNotFoundExceptionWhenNotFound() {
+        UUID userId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
         ExpenseRequestDTO dto = new ExpenseRequestDTO();
         dto.setDescription("Novo");
         dto.setAmount(BigDecimal.valueOf(20));
         dto.setCategory("FOOD");
 
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        when(repository.findByIdAndUserId(id, userId)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> useCase.execute(id, dto));
+        assertThrows(ResourceNotFoundException.class, () -> useCase.execute(userId, id, dto));
         verify(repository, never()).save(any(Expense.class));
     }
 
     @Test
     void shouldFailValidationWhenAmountIsNegative() {
+        UUID userId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
         Expense existingExpense = Expense.builder()
                 .id(id)
@@ -89,9 +92,9 @@ class UpdateExpenseUseCaseTest {
         dto.setAmount(BigDecimal.valueOf(-5));
         dto.setCategory("FOOD");
 
-        when(repository.findById(id)).thenReturn(Optional.of(existingExpense));
+        when(repository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(existingExpense));
 
-        assertThrows(BusinessException.class, () -> useCase.execute(id, dto));
+        assertThrows(BusinessException.class, () -> useCase.execute(userId, id, dto));
         verify(repository, never()).save(any(Expense.class));
     }
 }
