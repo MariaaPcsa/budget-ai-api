@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,13 +26,15 @@ class ExpenseSummaryServiceTest {
     @Test
     void shouldReturnTodayExpensesSummary() {
 
+        UUID userId = UUID.randomUUID();
         when(repository.getTodayTotal(
+                any(UUID.class),
                 any(),
                 any()
         )).thenReturn(BigDecimal.valueOf(250));
 
         String result =
-                service.getTodayExpenses();
+                service.getTodayExpenses(userId);
 
         assertEquals(
                 "Você gastou hoje R$ 250",

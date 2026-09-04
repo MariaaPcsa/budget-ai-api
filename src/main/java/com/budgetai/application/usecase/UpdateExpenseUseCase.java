@@ -18,8 +18,8 @@ public class UpdateExpenseUseCase {
     private final ExpenseRepository repository;
     private final ExpenseDomainService domainService;
 
-    public Expense execute(UUID id, ExpenseRequestDTO dto) {
-        Expense expense = repository.findById(id)
+    public Expense execute(UUID userId, UUID id, ExpenseRequestDTO dto) {
+        Expense expense = repository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Despesa com ID " + id + " não encontrada"));
 
         expense.setDescription(dto.getDescription());

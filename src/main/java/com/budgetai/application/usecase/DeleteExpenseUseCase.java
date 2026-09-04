@@ -13,8 +13,8 @@ public class DeleteExpenseUseCase {
 
     private final ExpenseRepository repository;
 
-    public void execute(UUID id) {
-        if (!repository.existsById(id)) {
+    public void execute(UUID userId, UUID id) {
+        if (!repository.existsByIdAndUserId(id, userId)) {
             throw new ResourceNotFoundException("Despesa com ID " + id + " não encontrada");
         }
         repository.deleteById(id);

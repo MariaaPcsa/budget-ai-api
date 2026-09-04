@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class ExpenseSummaryService {
 
     private final ExpenseRepository repository;
 
-    public String getTodayExpenses() {
+        public String getTodayExpenses(UUID userId) {
 
         LocalDate today = LocalDate.now();
 
@@ -26,6 +27,7 @@ public class ExpenseSummaryService {
 
         BigDecimal total =
                 repository.getTodayTotal(
+                        userId,
                         start,
                         end
                 );

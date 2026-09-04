@@ -2,6 +2,7 @@ package com.budgetai.controller;
 
 import com.budgetai.application.dto.ExpenseRequestDTO;
 import com.budgetai.application.dto.ExpenseSummaryDTO;
+import com.budgetai.application.port.CurrentUserProvider;
 import com.budgetai.application.usecase.*;
 import com.budgetai.domain.entity.Expense;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +25,9 @@ class ExpenseControllerTest {
     private UpdateExpenseUseCase updateExpenseUseCase;
     private DeleteExpenseUseCase deleteExpenseUseCase;
     private GetExpenseSummaryUseCase summaryUseCase;
+    private CurrentUserProvider currentUserProvider;
     private ExpenseController controller;
+    private UUID userId;
 
     @BeforeEach
     void setup() {
@@ -34,6 +37,9 @@ class ExpenseControllerTest {
         updateExpenseUseCase = mock(UpdateExpenseUseCase.class);
         deleteExpenseUseCase = mock(DeleteExpenseUseCase.class);
         summaryUseCase = mock(GetExpenseSummaryUseCase.class);
+        currentUserProvider = mock(CurrentUserProvider.class);
+        userId = UUID.randomUUID();
+        when(currentUserProvider.currentUserId()).thenReturn(userId);
 
         controller = new ExpenseController(
                 createExpenseUseCase,
@@ -41,7 +47,8 @@ class ExpenseControllerTest {
                 getExpenseByIdUseCase,
                 updateExpenseUseCase,
                 deleteExpenseUseCase,
-                summaryUseCase
+                summaryUseCase,
+                currentUserProvider
         );
     }
 
@@ -58,14 +65,14 @@ class ExpenseControllerTest {
                 .amount(BigDecimal.valueOf(35.5))
                 .build();
 
-        when(createExpenseUseCase.execute(dto)).thenReturn(created);
+        when(createExpenseUseCase.execute(userId, dto)).thenReturn(created);
 
         ResponseEntity<Expense> response = controller.create(dto);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(created, response.getBody());
-        verify(createExpenseUseCase).execute(dto);
+        verify(createExpenseUseCase).execute(userId, dto);
     }
 
     @Test
@@ -75,14 +82,14 @@ class ExpenseControllerTest {
                 .amount(BigDecimal.valueOf(50))
                 .build();
 
-        when(getExpensesUseCase.execute()).thenReturn(List.of(expense));
+        when(getExpensesUseCase.execute(userId)).thenReturn(List.of(expense));
 
         ResponseEntity<List<Expense>> response = controller.getAll();
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
         assertEquals(1, response.getBody().size());
-        verify(getExpensesUseCase).execute();
+        verify(getExpensesUseCase).execute(userId);
     }
 
     @Test
@@ -94,14 +101,14 @@ class ExpenseControllerTest {
                 .amount(BigDecimal.valueOf(120))
                 .build();
 
-        when(getExpenseByIdUseCase.execute(id)).thenReturn(expense);
+        when(getExpenseByIdUseCase.execute(userId, id)).thenReturn(expense);
 
         ResponseEntity<Expense> response = controller.getById(id);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expense, response.getBody());
-        verify(getExpenseByIdUseCase).execute(id);
+        verify(getExpenseByIdUseCase).execute(userId, id);
     }
 
     @Test
@@ -117,27 +124,27 @@ class ExpenseControllerTest {
                 .amount(BigDecimal.valueOf(130))
                 .build();
 
-        when(updateExpenseUseCase.execute(id, dto)).thenReturn(updated);
+        when(updateExpenseUseCase.execute(userId, id, dto)).thenReturn(updated);
 
         ResponseEntity<Expense> response = controller.update(id, dto);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(updated, response.getBody());
-        verify(updateExpenseUseCase).execute(id, dto);
+        verify(updateExpenseUseCase).execute(userId, id, dto);
     }
 
     @Test
     void shouldDeleteExpense() {
         UUID id = UUID.randomUUID();
 
-        doNothing().when(deleteExpenseUseCase).execute(id);
+        doNothing().when(deleteExpenseUseCase).execute(userId, id);
 
         ResponseEntity<Void> response = controller.delete(id);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        verify(deleteExpenseUseCase).execute(id);
+        verify(deleteExpenseUseCase).execute(userId, id);
     }
 
     @Test
@@ -148,13 +155,13 @@ class ExpenseControllerTest {
                 .totalExpenses(3)
                 .build();
 
-        when(summaryUseCase.execute()).thenReturn(summary);
+        when(summaryUseCase.execute(userId)).thenReturn(summary);
 
         ResponseEntity<ExpenseSummaryDTO> response = controller.summary();
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
         assertEquals("FOOD", response.getBody().getTopCategory());
-        verify(summaryUseCase).execute();
+        verify(summaryUseCase).execute(userId);
     }
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +14,7 @@ public class GetExpensesUseCase {
 
     private final ExpenseRepository repository;
 
-    public List<Expense> execute() {
-        return repository.findAll();
+    public List<Expense> execute(UUID userId) {
+        return repository.findAllByUserId(userId);
     }
 }

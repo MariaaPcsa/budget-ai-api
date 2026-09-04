@@ -9,10 +9,14 @@ O formato segue Keep a Changelog e o versionamento adotado sera semantico.
 
 - Governanca documental para a evolucao do AI Harness.
 - Registro de decisoes arquiteturais e historico de mudancas de IA.
+- Autenticacao stateless por JWT, cadastro e login de usuarios.
+- Isolamento de despesas e conversas pelo usuario autenticado.
+- Migracoes Flyway para schema de usuarios e propriedade dos dados.
 
 ### Changed
 
 - Credenciais do PostgreSQL foram removidas de configuracoes versionadas e passaram a ser exigidas por variaveis de ambiente.
+- Configuracoes de desenvolvimento e producao foram separadas por perfil, com CORS restrito a origens configuradas e timeouts para integracoes HTTP externas.
 
 ### Planned
 

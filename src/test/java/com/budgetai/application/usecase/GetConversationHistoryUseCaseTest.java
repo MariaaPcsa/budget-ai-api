@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,11 +41,12 @@ class GetConversationHistoryUseCaseTest {
                         .createdAt(now)
                         .build();
 
-        when(repository.findAll())
+        UUID userId = UUID.randomUUID();
+        when(repository.findAllByUserIdOrderByCreatedAtAsc(userId))
                 .thenReturn(List.of(conversation));
 
         List<ConversationResponseDTO> result =
-                useCase.execute();
+                useCase.execute(userId);
 
         assertEquals(1, result.size());
 
@@ -69,23 +71,24 @@ class GetConversationHistoryUseCaseTest {
         );
 
         verify(repository)
-                .findAll();
+                .findAllByUserIdOrderByCreatedAtAsc(userId);
     }
 
     @Test
     void shouldReturnEmptyList() {
 
-        when(repository.findAll())
+        UUID userId = UUID.randomUUID();
+        when(repository.findAllByUserIdOrderByCreatedAtAsc(userId))
                 .thenReturn(List.of());
 
         List<ConversationResponseDTO> result =
-                useCase.execute();
+                useCase.execute(userId);
 
         assertNotNull(result);
 
         assertTrue(result.isEmpty());
 
         verify(repository)
-                .findAll();
+                .findAllByUserIdOrderByCreatedAtAsc(userId);
     }
 }

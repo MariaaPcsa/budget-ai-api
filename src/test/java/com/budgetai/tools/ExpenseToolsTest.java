@@ -2,6 +2,7 @@ package com.budgetai.tools;
 
 import com.budgetai.application.dto.ExpenseRequestDTO;
 import com.budgetai.application.dto.ExpenseSummaryDTO;
+import com.budgetai.application.port.CurrentUserProvider;
 import com.budgetai.application.usecase.CreateExpenseUseCase;
 import com.budgetai.application.usecase.GetExpenseSummaryUseCase;
 import com.budgetai.domain.service.ExpenseSummaryService;
@@ -15,6 +16,8 @@ import static org.mockito.Mockito.*;
 
 class ExpenseToolsTest {
 
+        private final CurrentUserProvider currentUserProvider = mock(CurrentUserProvider.class);
+
     @Test
     void deveRegistrarGasto() {
 
@@ -27,8 +30,9 @@ class ExpenseToolsTest {
                 mock(ExpenseSummaryService.class);
 
         // 🔹 cria tool
-        ExpenseTools expenseTools =
-                new ExpenseTools(createExpenseUseCase, getExpenseSummaryUseCase, expenseSummaryService);
+        when(currentUserProvider.currentUserId()).thenReturn(java.util.UUID.randomUUID());
+        ExpenseTools expenseTools = new ExpenseTools(
+                createExpenseUseCase, getExpenseSummaryUseCase, expenseSummaryService, currentUserProvider);
 
         // 🔹 executa método
         String response = expenseTools.registrarGasto(
@@ -40,7 +44,7 @@ class ExpenseToolsTest {
 
         // 🔹 captura o DTO enviado
         verify(createExpenseUseCase, times(1))
-                .execute(argThat(dto ->
+                .execute(any(), argThat(dto ->
                         dto.getAmount().equals(new BigDecimal("80")) &&
                                 dto.getDescription().equals("iFood") &&
                                 dto.getCategory().equals("FOOD") &&
@@ -71,11 +75,12 @@ class ExpenseToolsTest {
                 .totalExpenses(3)
                 .build();
 
-        when(getExpenseSummaryUseCase.execute()).thenReturn(summaryDTO);
+        when(currentUserProvider.currentUserId()).thenReturn(java.util.UUID.randomUUID());
+        when(getExpenseSummaryUseCase.execute(any())).thenReturn(summaryDTO);
 
         // 🔹 cria tool
-        ExpenseTools expenseTools =
-                new ExpenseTools(createExpenseUseCase, getExpenseSummaryUseCase, expenseSummaryService);
+        ExpenseTools expenseTools = new ExpenseTools(
+                createExpenseUseCase, getExpenseSummaryUseCase, expenseSummaryService, currentUserProvider);
 
         // 🔹 executa
         String response = expenseTools.consultarResumoGastos();
@@ -85,7 +90,7 @@ class ExpenseToolsTest {
                 "Resumo geral: total gasto R$ 150.00, categoria com maior gasto: FOOD, total de despesas registradas: 3",
                 response
         );
-        verify(getExpenseSummaryUseCase, times(1)).execute();
+        verify(getExpenseSummaryUseCase, times(1)).execute(any());
     }
 
     @Test
@@ -99,11 +104,12 @@ class ExpenseToolsTest {
         ExpenseSummaryService expenseSummaryService =
                 mock(ExpenseSummaryService.class);
 
-        when(expenseSummaryService.getTodayExpenses()).thenReturn("Você gastou hoje R$ 50.00");
+        when(currentUserProvider.currentUserId()).thenReturn(java.util.UUID.randomUUID());
+        when(expenseSummaryService.getTodayExpenses(any())).thenReturn("Você gastou hoje R$ 50.00");
 
         // 🔹 cria tool
-        ExpenseTools expenseTools =
-                new ExpenseTools(createExpenseUseCase, getExpenseSummaryUseCase, expenseSummaryService);
+        ExpenseTools expenseTools = new ExpenseTools(
+                createExpenseUseCase, getExpenseSummaryUseCase, expenseSummaryService, currentUserProvider);
 
         // 🔹 executa
         String response = expenseTools.consultarGastosHoje();
@@ -113,6 +119,6 @@ class ExpenseToolsTest {
                 "Você gastou hoje R$ 50.00",
                 response
         );
-        verify(expenseSummaryService, times(1)).getTodayExpenses();
+        verify(expenseSummaryService, times(1)).getTodayExpenses(any());
     }
 }

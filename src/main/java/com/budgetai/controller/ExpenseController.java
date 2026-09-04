@@ -2,6 +2,7 @@ package com.budgetai.controller;
 
 import com.budgetai.application.dto.ExpenseRequestDTO;
 import com.budgetai.application.dto.ExpenseSummaryDTO;
+import com.budgetai.application.port.CurrentUserProvider;
 import com.budgetai.application.usecase.*;
 import com.budgetai.domain.entity.Expense;
 import jakarta.validation.Valid;
@@ -24,44 +25,54 @@ public class ExpenseController {
     private final UpdateExpenseUseCase updateExpenseUseCase;
     private final DeleteExpenseUseCase deleteExpenseUseCase;
     private final GetExpenseSummaryUseCase getExpenseSummaryUseCase;
+    private final CurrentUserProvider currentUserProvider;
 
     @PostMapping
-    public ResponseEntity<Expense> create(@Valid @RequestBody ExpenseRequestDTO dto) {
+        public ResponseEntity<Expense> create(
+            @Valid @RequestBody ExpenseRequestDTO dto
+        ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(createExpenseUseCase.execute(dto));
+                .body(createExpenseUseCase.execute(currentUserProvider.currentUserId(), dto));
     }
 
     @GetMapping
     public ResponseEntity<List<Expense>> getAll() {
         return ResponseEntity.ok(
-                getExpensesUseCase.execute()
+                getExpensesUseCase.execute(currentUserProvider.currentUserId())
         );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Expense> getById(@PathVariable UUID id) {
+        public ResponseEntity<Expense> getById(
+            @PathVariable UUID id
+        ) {
         return ResponseEntity.ok(
-                getExpenseByIdUseCase.execute(id)
+                getExpenseByIdUseCase.execute(currentUserProvider.currentUserId(), id)
         );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Expense> update(@PathVariable UUID id, @Valid @RequestBody ExpenseRequestDTO dto) {
+        public ResponseEntity<Expense> update(
+            @PathVariable UUID id,
+            @Valid @RequestBody ExpenseRequestDTO dto
+        ) {
         return ResponseEntity.ok(
-                updateExpenseUseCase.execute(id, dto)
+                updateExpenseUseCase.execute(currentUserProvider.currentUserId(), id, dto)
         );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        deleteExpenseUseCase.execute(id);
+    public ResponseEntity<Void> delete(
+            @PathVariable UUID id
+    ) {
+        deleteExpenseUseCase.execute(currentUserProvider.currentUserId(), id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/summary")
     public ResponseEntity<ExpenseSummaryDTO> summary() {
         return ResponseEntity.ok(
-                getExpenseSummaryUseCase.execute()
+                getExpenseSummaryUseCase.execute(currentUserProvider.currentUserId())
         );
     }
 }

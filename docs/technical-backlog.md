@@ -62,7 +62,7 @@
 
 **Impacto:** Interrupção total do processamento sem fallback amigável ou retentativas.
 
-**Solução proposta:** Integrar Spring Cloud Circuit Breaker / Resilience4j para tratar timeout e erros 5xx de forma automática com retries inteligentes.
+**Solucao proposta:** Timeouts de conexao e leitura foram configurados. Antes de integrar Spring Cloud Circuit Breaker / Resilience4j, definir idempotencia e politica de retry para tools de escrita; retries automaticos nao podem duplicar despesas.
 
 ---
 
@@ -72,7 +72,7 @@
 
 **Impacto:** Risco de exposicao de segredo e de deploy com configuracao insegura.
 
-**Solucao proposta:** Credenciais de PostgreSQL foram movidas para variaveis de ambiente em `application.yml` e `docker-compose.yml`. Permanecem pendentes perfis explicitos e a revisao de configuracoes de SQL, CORS e DDL por ambiente.
+**Solucao proposta:** Credenciais de PostgreSQL foram movidas para variaveis de ambiente em `application.yml` e `docker-compose.yml`. Perfis `dev` e `prod`, CORS por allow-list e SQL desabilitado em producao foram configurados. Permanecem pendentes rate limiting e revisao operacional do deploy.
 
 **Risco:** Alto. Rotacionar qualquer credencial que tenha sido compartilhada ou versionada.
 
@@ -80,10 +80,10 @@
 
 ### BACK-006 — Politicas de Acesso, Contexto e Tools
 
-**Problema:** A aplicacao ainda nao possui autenticacao, isolamento por usuario, limite de contexto, politicas de permissao de tools ou auditoria de chamadas.
+**Problema:** Autenticacao JWT e isolamento de despesas e conversas por usuario foram implementados. Ainda faltam limite de contexto, politicas de permissao de tools e auditoria de chamadas.
 
 **Impacto:** Dados financeiros e futuras capacidades de agente/MCP nao podem ser expostos com seguranca.
 
-**Solucao proposta:** Implementar identidade e autorizacao antes de memoria persistente, agentes com escrita ou MCP exposto; adicionar contexto limitado, allow-list de tools e trilha de auditoria no AI Harness.
+**Solucao proposta:** Manter identidade e autorizacao como pre-requisito para memoria persistente, agentes com escrita ou MCP exposto; adicionar contexto limitado, allow-list de tools e trilha de auditoria no AI Harness.
 
 **Risco:** Alto para qualquer exposicao multiusuario ou integracao externa.

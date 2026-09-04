@@ -25,28 +25,43 @@ class GetExpenseByIdUseCaseTest {
 
     @Test
     void shouldReturnExpenseWhenFound() {
+        UUID userId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
         Expense expense = Expense.builder()
                 .id(id)
                 .description("Mercado")
                 .build();
 
-        when(repository.findById(id)).thenReturn(Optional.of(expense));
+        when(repository.findByIdAndUserId(id, userId)).thenReturn(Optional.of(expense));
 
-        Expense result = useCase.execute(id);
+        Expense result = useCase.execute(userId, id);
 
         assertNotNull(result);
         assertEquals(id, result.getId());
         assertEquals("Mercado", result.getDescription());
-        verify(repository).findById(id);
+        verify(repository).findByIdAndUserId(id, userId);
     }
 
     @Test
     void shouldThrowResourceNotFoundExceptionWhenNotFound() {
+        UUID userId = UUID.randomUUID();
         UUID id = UUID.randomUUID();
-        when(repository.findById(id)).thenReturn(Optional.empty());
+        when(repository.findByIdAndUserId(id, userId)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> useCase.execute(id));
-        verify(repository).findById(id);
+        assertThrows(ResourceNotFoundException.class, () -> useCase.execute(userId, id));
+        verify(repository).findByIdAndUserId(id, userId);
+    }
+
+    @Test
+    void shouldNotReturnExpenseOwnedByAnotherUser() {
+        UUID ownerId = UUID.randomUUID();
+        UUID anotherUserId = UUID.randomUUID();
+        UUID expenseId = UUID.randomUUID();
+        when(repository.findByIdAndUserId(expenseId, anotherUserId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> useCase.execute(anotherUserId, expenseId));
+
+        verify(repository).findByIdAndUserId(expenseId, anotherUserId);
+        verify(repository, never()).findById(expenseId);
     }
 }

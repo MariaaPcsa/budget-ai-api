@@ -616,6 +616,58 @@ export OPENAI_API_KEY="your_api_key"
 
 ---
 
+# Perfis e acesso do navegador
+
+O perfil `dev` e o padrao local. Ele aplica migrations Flyway e valida o schema com Hibernate. O perfil `prod` tambem valida o schema, desabilita SQL nos logs e exige `APP_CORS_ALLOWED_ORIGINS`.
+
+Ative producao explicitamente:
+
+```text
+SPRING_PROFILES_ACTIVE=prod
+```
+
+O CORS aceita somente as origens configuradas em `APP_CORS_ALLOWED_ORIGINS`. Para multiplas origens, use valores separados por virgula.
+
+As chamadas STT, TTS e de IA usam `OPENAI_CONNECT_TIMEOUT` e `OPENAI_READ_TIMEOUT`. Os valores padrao sao `5s` e `30s`, respectivamente.
+
+---
+
+# Autenticacao
+
+Os endpoints em `/api/**` exigem um token Bearer, exceto os endpoints de autenticacao e a documentacao OpenAPI.
+
+## Cadastro
+
+`POST /api/auth/register`
+
+```json
+{
+  "email": "user@example.com",
+  "password": "a-strong-password"
+}
+```
+
+## Login
+
+`POST /api/auth/login`
+
+```json
+{
+  "email": "user@example.com",
+  "password": "a-strong-password"
+}
+```
+
+As duas operacoes retornam `accessToken`. Envie-o nas chamadas protegidas:
+
+```text
+Authorization: Bearer <accessToken>
+```
+
+Cada despesa e conversa pertence ao usuario identificado pelo token. O identificador do usuario nao e aceito em payloads, tools ou prompts.
+
+---
+
 # Executando localmente
 
 Clone o projeto:

@@ -7,10 +7,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class VoiceChatUseCaseTest {
+
+        private final UUID userId = UUID.randomUUID();
 
     private FutureSttModule sttModule;
     private AssistantService assistantService;
@@ -53,7 +57,7 @@ class VoiceChatUseCaseTest {
         );
 
         VoiceResponseDTO response =
-                useCase.execute(file);
+                useCase.execute(userId, file);
 
         assertNotNull(response);
 
@@ -69,6 +73,7 @@ class VoiceChatUseCaseTest {
 
         verify(saveConversationUseCase)
                 .execute(
+                        userId,
                         "Quanto gastei hoje?",
                         "Você gastou hoje R$ 200.00"
                 );
@@ -80,7 +85,7 @@ class VoiceChatUseCaseTest {
         IllegalArgumentException exception =
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> useCase.execute(null)
+                        () -> useCase.execute(userId, null)
                 );
 
         assertEquals(
@@ -103,7 +108,7 @@ class VoiceChatUseCaseTest {
         IllegalArgumentException exception =
                 assertThrows(
                         IllegalArgumentException.class,
-                        () -> useCase.execute(file)
+                        () -> useCase.execute(userId, file)
                 );
 
         assertEquals(
@@ -129,7 +134,7 @@ class VoiceChatUseCaseTest {
         RuntimeException exception =
                 assertThrows(
                         RuntimeException.class,
-                        () -> useCase.execute(file)
+                        () -> useCase.execute(userId, file)
                 );
 
         assertTrue(
@@ -158,7 +163,7 @@ class VoiceChatUseCaseTest {
         RuntimeException exception =
                 assertThrows(
                         RuntimeException.class,
-                        () -> useCase.execute(file)
+                        () -> useCase.execute(userId, file)
                 );
 
         assertTrue(
@@ -184,10 +189,11 @@ class VoiceChatUseCaseTest {
         when(assistantService.processMessage(any()))
                 .thenReturn("Resposta");
 
-        useCase.execute(file);
+        useCase.execute(userId, file);
 
         verify(saveConversationUseCase, times(1))
                 .execute(
+                        userId,
                         "Olá",
                         "Resposta"
                 );

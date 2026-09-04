@@ -1,20 +1,35 @@
 package com.budgetai.controller;
 
 import com.budgetai.application.dto.VoiceResponseDTO;
+import com.budgetai.application.port.CurrentUserProvider;
 import com.budgetai.application.usecase.VoiceChatUseCase;
+import com.budgetai.infrastructure.security.JwtAuthenticationFilter;
+import com.budgetai.infrastructure.security.SecurityConfig;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(VoiceController.class)
+@WebMvcTest(
+        controllers = VoiceController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = {SecurityConfig.class, JwtAuthenticationFilter.class}
+        )
+)
+@AutoConfigureMockMvc(addFilters = false)
 class VoiceControllerTest {
 
     @Autowired
@@ -22,6 +37,9 @@ class VoiceControllerTest {
 
     @MockBean
     private VoiceChatUseCase voiceChatUseCase;
+
+        @MockBean
+        private CurrentUserProvider currentUserProvider;
 
     @Test
     void shouldProcessVoiceSuccessfully() throws Exception {
@@ -40,7 +58,8 @@ class VoiceControllerTest {
                         "Você gastou hoje R$ 200.00"
                 );
 
-        when(voiceChatUseCase.execute(any()))
+        when(currentUserProvider.currentUserId()).thenReturn(UUID.randomUUID());
+        when(voiceChatUseCase.execute(any(), any()))
                 .thenReturn(dto);
 
         mockMvc.perform(

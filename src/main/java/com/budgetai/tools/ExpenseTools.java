@@ -1,6 +1,7 @@
 package com.budgetai.tools;
 
 import com.budgetai.application.dto.ExpenseRequestDTO;
+import com.budgetai.application.port.CurrentUserProvider;
 import com.budgetai.application.usecase.CreateExpenseUseCase;
 import com.budgetai.application.usecase.GetExpenseSummaryUseCase;
 import com.budgetai.domain.service.ExpenseSummaryService;
@@ -20,6 +21,7 @@ public class ExpenseTools {
     private final CreateExpenseUseCase createExpenseUseCase;
     private final GetExpenseSummaryUseCase getExpenseSummaryUseCase;
     private final ExpenseSummaryService expenseSummaryService;
+    private final CurrentUserProvider currentUserProvider;
 
     @Tool(
             name = "registrar_gasto",
@@ -50,7 +52,7 @@ public class ExpenseTools {
             dto.setCategory(ExpenseCategory.OTHER.name());
         }
 
-        createExpenseUseCase.execute(dto);
+        createExpenseUseCase.execute(currentUserProvider.currentUserId(), dto);
 
         return "Gasto registrado com sucesso";
     }
@@ -61,7 +63,7 @@ public class ExpenseTools {
     )
     public String consultarResumoGastos() {
         log.info(" Executando tool: consultar_resumo_gastos");
-        var summary = getExpenseSummaryUseCase.execute();
+        var summary = getExpenseSummaryUseCase.execute(currentUserProvider.currentUserId());
         return String.format(
                 "Resumo geral: total gasto R$ %s, categoria com maior gasto: %s, total de despesas registradas: %d",
                 summary.getTotalSpent(),
@@ -76,6 +78,6 @@ public class ExpenseTools {
     )
     public String consultarGastosHoje() {
         log.info(" Executando tool: consultar_gastos_hoje");
-        return expenseSummaryService.getTodayExpenses();
+        return expenseSummaryService.getTodayExpenses(currentUserProvider.currentUserId());
     }
 }
